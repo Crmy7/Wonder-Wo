@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-green-50 to-green-100">
+  <div class="min-h-screen bg-beige">
     <!-- Header -->
     <header class="py-8">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-4xl font-bold text-green-800 text-center">Wonder Wo</h1>
-        <p class="text-xl text-gray-600 text-center mt-2">Vos remèdes naturels personnalisés</p>
+        <h1 class="text-4xl font-bold  text-center">Wonder Wo</h1>
+        <p class="text-xl text-center mt-2">Vos remèdes naturels personnalisés</p>
       </div>
     </header>
 
@@ -14,7 +14,7 @@
         <h2 class="text-3xl font-bold text-gray-900 mb-6">
           Découvrez les bienfaits de la nature
         </h2>
-        <p class="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
+        <p class="text-lg mb-8 max-w-3xl mx-auto">
           Wonder Wo vous accompagne dans votre recherche de bien-être naturel. 
           Recevez des recommandations personnalisées de remèdes naturels adaptés à vos symptômes, 
           votre profil et les produits de votre placard.
@@ -51,14 +51,14 @@
         <div class="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
           <NuxtLink
             to="/register"
-            class="inline-block bg-green-600 hover:bg-green-700 text-white font-medium px-8 py-3 rounded-lg transition-colors focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            class="primary-btn"
           >
             Commencer gratuitement
           </NuxtLink>
           
           <NuxtLink
             to="/login"
-            class="inline-block bg-white hover:bg-gray-50 text-green-600 font-medium px-8 py-3 rounded-lg border border-green-600 transition-colors focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            class="secondary-btn"
           >
             Se connecter
           </NuxtLink>
