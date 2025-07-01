@@ -66,8 +66,11 @@
             </p>
           </a>
         </div>
-
+        
         <!-- CTA Buttons -->
+         <NuxtLink to="/maux" class="secondary-btn">
+              Rechercher un remède
+        </NuxtLink>
         <!-- Only if not logged in -->
         <div v-if="!authStore.loading && !authStore.isLoggedIn">
           <div
