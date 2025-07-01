@@ -60,14 +60,31 @@
       <div
         class="absolute bottom-20 right-4 bg-[var(--color-blanc)] rounded-xl shadow-lg overflow-hidden min-w-[160px] animate-slideUp"
       >
-        <NuxtLink to="/register" @click="showMore = false"
-          class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-beige transition-colors cursor-pointer">
-          <span class="accent-text">S'inscrire</span>
-        </NuxtLink>
-        <div @click="showMore = false"
-          class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-beige transition-colors cursor-pointer">
-          <span class="accent-text">Paramètres</span>
-        </div>
+        <!-- Si non connecté -->
+        <template v-if="!authStore.isLoggedIn">
+          <NuxtLink to="/register" @click="showMore = false"
+            class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-beige transition-colors cursor-pointer">
+            <span class="accent-text">S'inscrire</span>
+          </NuxtLink>
+          <NuxtLink to="/login" @click="showMore = false"
+            class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-beige transition-colors cursor-pointer">
+            <span class="accent-text">Se connecter</span>
+          </NuxtLink>
+        </template>
+
+        <!-- Si connecté -->
+        <template v-else>
+          <div @click="showMore = false"
+            class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-beige transition-colors cursor-pointer">
+            <span class="accent-text">Paramètres</span>
+          </div>
+          <div @click="handleLogout"
+            class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-beige transition-colors cursor-pointer">
+            <span class="accent-text text-secondary">Se déconnecter</span>
+          </div>
+        </template>
+
+        <!-- Option commune -->
         <div @click="showMore = false"
           class="block px-4 py-3 text-sm hover:bg-beige transition-colors cursor-pointer">
           <span class="accent-text">Aide</span>
@@ -80,9 +97,21 @@
 <script setup>
 import { ref } from 'vue'
 
+const authStore = useAuthStore()
 const showMore = ref(false)
+
 const toggleMore = () => {
   showMore.value = !showMore.value
+}
+
+const handleLogout = async () => {
+  showMore.value = false
+  try {
+    await authStore.logout()
+    await navigateTo('/')
+  } catch (error) {
+    console.error('Erreur déconnexion:', error)
+  }
 }
 </script>
 
@@ -102,3 +131,4 @@ const toggleMore = () => {
   animation: slideUp 0.2s ease-out;
 }
 </style>
+ 

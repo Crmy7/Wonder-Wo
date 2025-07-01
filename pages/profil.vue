@@ -25,10 +25,11 @@
             </button>
             <button
               @click="handleLogout"
-              :disabled="loading"
+              :disabled="authStore.loading"
               class="secondary-btn"
             >
-              Se déconnecter
+              <span v-if="authStore.loading">Déconnexion...</span>
+              <span v-else>Se déconnecter</span>
             </button>
           </div>
         </div>
@@ -214,8 +215,12 @@
 <script setup lang="ts">
 // Configuration de la page
 definePageMeta({
-  layout: false
+  layout: false,
+  middleware: 'auth'
 })
+
+// Store d'authentification
+const authStore = useAuthStore()
 
 // État global
 const loading = ref(false)
@@ -237,6 +242,13 @@ const newProfil = reactive({
 
 // Charger les profils au montage
 onMounted(async () => {
+  // Vérifier l'authentification
+  await authStore.checkAuth()
+  if (!authStore.isLoggedIn) {
+    await navigateTo('/login')
+    return
+  }
+  
   await loadProfils()
 })
 
@@ -326,19 +338,11 @@ const resetCreateForm = () => {
 
 // Déconnexion
 const handleLogout = async () => {
-  loading.value = true
-  
   try {
-    await $fetch('/api/auth/logout', {
-      method: 'POST'
-    })
-    
+    await authStore.logout()
     await navigateTo('/')
-    
   } catch (error) {
     console.error('Erreur déconnexion:', error)
-  } finally {
-    loading.value = false
   }
 }
 </script> 

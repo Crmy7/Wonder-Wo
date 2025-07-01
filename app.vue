@@ -1,7 +1,7 @@
 <template>
   <div>
     <main class="main-content">
-      <NuxtPage />
+    <NuxtPage />
     </main>
     <MobileNav />
   </div>
