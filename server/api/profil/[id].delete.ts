@@ -3,7 +3,7 @@ import { getCurrentUser } from '~/server/utils/auth-middleware'
 export default defineEventHandler(async (event) => {
   try {
     // Vérifier l'authentification
-    const userId = await getCurrentUser(event)
+    const IdUser = await getCurrentUser(event)
     
     const profilId = getRouterParam(event, 'id')
     
@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
       const profil = await Profil.findOne({
         where: { 
           id: parseInt(profilId),
-          userId 
+          IdUser 
         }
       })
 

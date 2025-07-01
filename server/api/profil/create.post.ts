@@ -3,7 +3,7 @@ import { getCurrentUser } from '~/server/utils/auth-middleware'
 export default defineEventHandler(async (event) => {
   try {
     // Vérifier l'authentification
-    const userId = await getCurrentUser(event)
+    const IdUser = await getCurrentUser(event)
     
     const body = await readBody(event)
     const { nom, age, grossesse, enfants } = body
@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
       
       // Créer le profil en base
       const profil: any = await Profil.create({
-        userId,
+        IdUser,
         nom,
         age: parseInt(age),
         grossesse: grossesse || false,

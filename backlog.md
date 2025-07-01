@@ -24,7 +24,7 @@ Créer une webapp intuitive pour recommander des remèdes naturels à partir des
 
 #### Profils
 - id (PK)
-- userId (FK Users)
+- IdUser (FK Users)
 - nom
 - âge
 - grossesse (bool)

@@ -21,7 +21,7 @@ export const getCurrentUser = async (event: any) => {
       })
     }
 
-    return decoded.userId
+    return decoded.IdUser
   } catch (error) {
     throw createError({
       statusCode: 401,

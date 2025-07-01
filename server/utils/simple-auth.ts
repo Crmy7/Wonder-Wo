@@ -6,7 +6,7 @@ const JWT_EXPIRES = process.env.JWT_EXPIRES || '7d'
 
 // Stockage simple en mémoire (remplacera la DB plus tard)
 const users: Array<{ id: number; email: string; password: string }> = []
-let nextUserId = 1
+let nextIdUser = 1
 
 // Hasher un mot de passe
 export const hashPassword = async (password: string): Promise<string> => {
@@ -20,14 +20,14 @@ export const verifyPassword = async (password: string, hashedPassword: string): 
 }
 
 // Générer un token JWT
-export const generateToken = (userId: number): string => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES })
+export const generateToken = (IdUser: number): string => {
+  return jwt.sign({ IdUser }, JWT_SECRET, { expiresIn: JWT_EXPIRES })
 }
 
 // Vérifier un token JWT
-export const verifyToken = (token: string): { userId: number } | null => {
+export const verifyToken = (token: string): { IdUser: number } | null => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: number }
+    const decoded = jwt.verify(token, JWT_SECRET) as { IdUser: number }
     return decoded
   } catch (error) {
     return null
@@ -38,7 +38,7 @@ export const verifyToken = (token: string): { userId: number } | null => {
 export const createUser = async (email: string, password: string) => {
   const hashedPassword = await hashPassword(password)
   const user = {
-    id: nextUserId++,
+    id: nextIdUser++,
     email,
     password: hashedPassword
   }

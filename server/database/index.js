@@ -1,6 +1,10 @@
 import sequelize from './config.js';
 import User from './models/User.js';
 import Profil from './models/Profil.js';
+import Produit from './models/Produits.js';
+import Recettes from './models/Recettes.js';
+import Maux from './models/Maux.js';
+import Placard from './models/Placard.js';
 
 // Relations entre les modèles
 User.hasMany(Profil, { 

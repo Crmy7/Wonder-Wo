@@ -3,7 +3,7 @@ import { getCurrentUser } from '~/server/utils/auth-middleware'
 export default defineEventHandler(async (event) => {
   try {
     // Vérifier l'authentification
-    const userId = await getCurrentUser(event)
+    const IdUser = await getCurrentUser(event)
 
     // Essayer la base de données d'abord
     try {
@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
       
       // Récupérer les profils de l'utilisateur
       const profils = await Profil.findAll({
-        where: { userId },
+        where: { IdUser },
         order: [['createdAt', 'ASC']]
       })
 

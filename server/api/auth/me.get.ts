@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     // Vérifier le token JWT
     const decoded = verifyToken(token)
     
-    if (!decoded || !decoded.userId) {
+    if (!decoded || !decoded.IdUser) {
       throw createError({
         statusCode: 401,
         statusMessage: 'Token invalide'
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
     try {
       const { User } = await import('~/server/database')
       
-      const user: any = await User.findByPk(decoded.userId)
+      const user: any = await User.findByPk(decoded.IdUser)
       
       if (!user) {
         throw createError({
@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
       return {
         success: true,
         user: {
-          id: decoded.userId,
+          id: decoded.IdUser,
           email: 'demo@wonderwo.com' // Email par défaut pour le mode démo
         }
       }
