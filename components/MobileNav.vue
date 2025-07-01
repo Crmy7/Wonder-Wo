@@ -37,6 +37,7 @@
               <img src="/img/Account_WW.svg" alt="Profil" class="w-5 h-5" />
               <span class="font-medium">Profils</span>
             </NuxtLink>
+
             <NuxtLink
               to="/maux"
               class="flex items-center space-x-2 px-3 py-2 rounded-lg text-[var(--color-grey-black)] hover:bg-beige transition-all duration-200"
@@ -46,6 +47,22 @@
             >
               <img src="/img/Symptomes_WW.svg" alt="Maux" class="w-5 h-5" />
               <span class="font-medium">Maux</span>
+            </NuxtLink>
+
+            <NuxtLink
+              to="/library"
+              class="flex items-center space-x-2 px-3 py-2 rounded-lg text-[var(--color-grey-black)] hover:bg-beige transition-all duration-200"
+              :class="{
+                'bg-beige text-[var(--color-primary)]':
+                  $route.path === '/library',
+              }"
+            >
+              <img
+                src="/img/Produit_WW.svg"
+                alt="Bibliothèque"
+                class="w-5 h-5"
+              />
+              <span class="font-medium">Bibliothèque</span>
             </NuxtLink>
 
             <NuxtLink
@@ -231,23 +248,6 @@
       <!-- Navigation adaptative selon l'état d'auth -->
       <template v-if="authStore.isLoggedIn">
         <NuxtLink
-          to="/profil"
-          class="flex flex-col items-center justify-center min-w-0 flex-1 px-1 py-2 rounded-xl text-[var(--color-grey-black)] opacity-60 hover:bg-beige hover:opacity-80 transition-all duration-200"
-          :class="{
-            'bg-beige text-[var(--color-primary)] opacity-100':
-              $route.path === '/profil',
-          }"
-        >
-          <div
-            class="flex items-center justify-center mb-1 w-6 h-6 transition-transform"
-            :class="{ 'scale-110': $route.path === '/profil' }"
-          >
-            <img src="/img/Account_WW.svg" alt="Profil" class="w-6 h-6" />
-          </div>
-          <span class="text-xs font-medium font-hashtag truncate">Profils</span>
-        </NuxtLink>
-
-        <NuxtLink
           to="/maux"
           class="flex flex-col items-center justify-center min-w-0 flex-1 px-1 py-2 rounded-xl text-[var(--color-grey-black)] opacity-60 hover:bg-beige hover:opacity-80 transition-all duration-200"
           :class="{
@@ -262,6 +262,25 @@
             <img src="/img/Symptomes_WW.svg" alt="Maux" class="w-6 h-6" />
           </div>
           <span class="text-xs font-medium font-hashtag truncate">Maux</span>
+        </NuxtLink>
+
+        <NuxtLink
+          to="/library"
+          class="flex flex-col items-center justify-center min-w-0 flex-1 px-1 py-2 rounded-xl text-[var(--color-grey-black)] opacity-60 hover:bg-beige hover:opacity-80 transition-all duration-200"
+          :class="{
+            'bg-beige text-[var(--color-primary)] opacity-100':
+              $route.path === '/library',
+          }"
+        >
+          <div
+            class="flex items-center justify-center mb-1 w-6 h-6 transition-transform"
+            :class="{ 'scale-110': $route.path === '/library' }"
+          >
+            <img src="/img/Produit_WW.svg" alt="Bibliothèque" class="w-6 h-6" />
+          </div>
+          <span class="text-xs font-medium font-hashtag truncate"
+            >Bibliothèque</span
+          >
         </NuxtLink>
 
         <NuxtLink
@@ -281,6 +300,23 @@
           <span class="text-xs font-medium font-hashtag truncate"
             >Recherche</span
           >
+        </NuxtLink>
+
+        <NuxtLink
+          to="/profil"
+          class="flex flex-col items-center justify-center min-w-0 flex-1 px-1 py-2 rounded-xl text-[var(--color-grey-black)] opacity-60 hover:bg-beige hover:opacity-80 transition-all duration-200"
+          :class="{
+            'bg-beige text-[var(--color-primary)] opacity-100':
+              $route.path === '/profil',
+          }"
+        >
+          <div
+            class="flex items-center justify-center mb-1 w-6 h-6 transition-transform"
+            :class="{ 'scale-110': $route.path === '/profil' }"
+          >
+            <img src="/img/Account_WW.svg" alt="Profil" class="w-6 h-6" />
+          </div>
+          <span class="text-xs font-medium font-hashtag truncate">Profils</span>
         </NuxtLink>
       </template>
 
@@ -402,7 +438,7 @@
       </template>
 
       <div
-        class="flex flex-col items-center justify-center min-w-0 flex-1 px-1 py-2 rounded-xl text-[var(--color-grey-black)] opacity-60 hover:bg-beige hover:opacity-80 transition-all duration-200 cursor-pointer"
+        class="hidden flex flex-col items-center justify-center min-w-0 flex-1 px-1 py-2 rounded-xl text-[var(--color-grey-black)] opacity-60 hover:bg-beige hover:opacity-80 transition-all duration-200 cursor-pointer"
         @click="toggleMobileMore"
       >
         <div
