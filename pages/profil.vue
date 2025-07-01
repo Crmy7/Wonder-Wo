@@ -9,7 +9,7 @@
       </div>
 
       <!-- Actions -->
-      <div class="bg-beige/30 backdrop-blur-sm p-6 rounded-2xl border border-beige mb-8">
+      <div class="bg-blanc/30 backdrop-blur-sm p-6 rounded-2xl border border-beige mb-8">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
             <h3 class="text-xl font-semibold mb-1">Mes Profils</h3>
@@ -76,7 +76,7 @@
           
           <!-- Options spéciales -->
           <div class="space-y-4">
-            <div class="flex items-center p-3 bg-beige/20 rounded-xl">
+            <div class="flex items-center p-3 bg-blanc/20 rounded-xl">
               <input
                 id="grossesse"
                 v-model="newProfil.grossesse"
@@ -88,7 +88,7 @@
               </label>
             </div>
             
-            <div class="flex items-center p-3 bg-beige/20 rounded-xl">
+            <div class="flex items-center p-3 bg-blanc/20 rounded-xl">
               <input
                 id="enfants"
                 v-model="newProfil.enfants"
@@ -135,7 +135,7 @@
       <!-- Liste des profils -->
       <div class="space-y-6">
         <div v-if="profils.length === 0" class="bg-blanc p-8 rounded-2xl border border-beige text-center">
-          <div class="w-20 h-20 bg-beige/40 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div class="w-20 h-20 bg-blanc/40 rounded-full flex items-center justify-center mx-auto mb-6">
             <span class="text-3xl">👨‍👩‍👧‍👦</span>
           </div>
           <h3 class="text-lg font-semibold mb-3">Aucun profil créé</h3>
@@ -160,10 +160,10 @@
               </div>
               
               <div class="flex flex-wrap gap-2 text-sm">
-                <span v-if="profil.grossesse" class="bg-beige text-grey-black px-3 py-1 rounded-full flex items-center gap-1">
+                <span v-if="profil.grossesse" class="bg-blanc text-grey-black px-3 py-1 rounded-full flex items-center gap-1">
                   🤱 <span class="font-hashtag text-xl">Enceinte</span>
                 </span>
-                <span v-if="profil.enfants" class="bg-beige text-grey-black px-3 py-1 rounded-full flex items-center gap-1">
+                <span v-if="profil.enfants" class="bg-blanc text-grey-black px-3 py-1 rounded-full flex items-center gap-1">
                   👨‍👩‍👧‍👦 <span class="font-hashtag text-xl">Parent</span>
                 </span>
                 <span v-if="!profil.grossesse && !profil.enfants" class="accent-text-primary text-xl">

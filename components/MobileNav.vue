@@ -5,8 +5,8 @@
     <div class="flex justify-around items-center px-2 py-3 max-w-full">
       <NuxtLink
         to="/"
-        class="flex flex-col items-center justify-center min-w-0 flex-1 px-1 py-2 rounded-xl text-[var(--color-grey-black)] opacity-60 hover:bg-beige hover:opacity-80 transition-all duration-200"
-        :class="{ 'bg-beige text-[var(--color-primary)] opacity-100': $route.path === '/' }"
+        class="flex flex-col items-center justify-center min-w-0 flex-1 px-1 py-2 rounded-xl text-[var(--color-grey-black)] opacity-60 hover:bg-blanc hover:opacity-80 transition-all duration-200"
+        :class="{ 'bg-blanc text-[var(--color-primary)] opacity-100': $route.path === '/' }"
       >
         <div class="flex items-center justify-center mb-1 w-6 h-6 transition-transform"
              :class="{ 'scale-110': $route.path === '/' }">
@@ -17,8 +17,8 @@
 
       <NuxtLink
         to="/profil"
-        class="flex flex-col items-center justify-center min-w-0 flex-1 px-1 py-2 rounded-xl text-[var(--color-grey-black)] opacity-60 hover:bg-beige hover:opacity-80 transition-all duration-200"
-        :class="{ 'bg-beige text-[var(--color-primary)] opacity-100': $route.path === '/profil' }"
+        class="flex flex-col items-center justify-center min-w-0 flex-1 px-1 py-2 rounded-xl text-[var(--color-grey-black)] opacity-60 hover:bg-blanc hover:opacity-80 transition-all duration-200"
+        :class="{ 'bg-blanc text-[var(--color-primary)] opacity-100': $route.path === '/profil' }"
       >
         <div class="flex items-center justify-center mb-1 w-6 h-6 transition-transform"
              :class="{ 'scale-110': $route.path === '/profil' }">
@@ -29,8 +29,8 @@
 
       <NuxtLink
         to="/login"
-        class="flex flex-col items-center justify-center min-w-0 flex-1 px-1 py-2 rounded-xl text-[var(--color-grey-black)] opacity-60 hover:bg-beige hover:opacity-80 transition-all duration-200"
-        :class="{ 'bg-beige text-[var(--color-primary)] opacity-100': $route.path === '/login' || $route.path === '/register' }"
+        class="flex flex-col items-center justify-center min-w-0 flex-1 px-1 py-2 rounded-xl text-[var(--color-grey-black)] opacity-60 hover:bg-blanc hover:opacity-80 transition-all duration-200"
+        :class="{ 'bg-blanc text-[var(--color-primary)] opacity-100': $route.path === '/login' || $route.path === '/register' }"
       >
         <div class="flex items-center justify-center mb-1 w-6 h-6 transition-transform"
              :class="{ 'scale-110': $route.path === '/login' || $route.path === '/register' }">
@@ -40,7 +40,7 @@
       </NuxtLink>
 
       <div
-        class="flex flex-col items-center justify-center min-w-0 flex-1 px-1 py-2 rounded-xl text-[var(--color-grey-black)] opacity-60 hover:bg-beige hover:opacity-80 transition-all duration-200 cursor-pointer"
+        class="flex flex-col items-center justify-center min-w-0 flex-1 px-1 py-2 rounded-xl text-[var(--color-grey-black)] opacity-60 hover:bg-blanc hover:opacity-80 transition-all duration-200 cursor-pointer"
         @click="toggleMore"
       >
                  <div class="flex items-center justify-center mb-1 w-6 h-6 transition-transform">
@@ -63,11 +63,11 @@
         <!-- Si non connecté -->
         <template v-if="!authStore.isLoggedIn">
           <NuxtLink to="/register" @click="showMore = false"
-            class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-beige transition-colors cursor-pointer">
+            class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-blanc transition-colors cursor-pointer">
             <span class="accent-text">S'inscrire</span>
           </NuxtLink>
           <NuxtLink to="/login" @click="showMore = false"
-            class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-beige transition-colors cursor-pointer">
+            class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-blanc transition-colors cursor-pointer">
             <span class="accent-text">Se connecter</span>
           </NuxtLink>
         </template>
@@ -75,18 +75,18 @@
         <!-- Si connecté -->
         <template v-else>
           <div @click="showMore = false"
-            class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-beige transition-colors cursor-pointer">
+            class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-blanc transition-colors cursor-pointer">
             <span class="accent-text">Paramètres</span>
           </div>
           <div @click="handleLogout"
-            class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-beige transition-colors cursor-pointer">
+            class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-blanc transition-colors cursor-pointer">
             <span class="accent-text text-secondary">Se déconnecter</span>
           </div>
         </template>
 
         <!-- Option commune -->
         <div @click="showMore = false"
-          class="block px-4 py-3 text-sm hover:bg-beige transition-colors cursor-pointer">
+          class="block px-4 py-3 text-sm hover:bg-blanc transition-colors cursor-pointer">
           <span class="accent-text">Aide</span>
         </div>
       </div>
