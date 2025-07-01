@@ -4,13 +4,13 @@ import Profil from './models/Profil.js';
 
 // Relations entre les modèles
 User.hasMany(Profil, { 
-    foreignKey: 'userId', 
+    foreignKey: 'IdUser', 
     as: 'profils',
     onDelete: 'CASCADE'
 });
 
 Profil.belongsTo(User, { 
-    foreignKey: 'userId', 
+    foreignKey: 'IdUser', 
     as: 'user' 
 });
 
