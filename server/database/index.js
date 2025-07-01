@@ -14,56 +14,56 @@ Profil.belongsTo(User, {
     as: 'user' 
 });
 
-// // Relation Produit / Recette
-// Produit.hasMany(Recettes, {
-//   foreignKey: 'IdProduit',
-//   as: 'recettes'
-// });
+// Relation Produit / Recette
+Produit.hasMany(Recettes, {
+  foreignKey: 'IdProduit',
+  as: 'recettes'
+});
 
-// Recettes.belongsTo(Produit, {
-//   foreignKey: 'IdProduit',
-//   as: 'produit'
-// });
+Recettes.belongsTo(Produit, {
+  foreignKey: 'IdProduit',
+  as: 'produit'
+});
 
-// // Relation Produit / Maux
-// Produit.hasMany(Maux, {
-//   foreignKey: 'IdProduit',
-//   as: 'maux'
-// });
-// Maux.belongsTo(Produit, {
-//   foreignKey: 'IdProduit',
-//   as: 'produit'
-// });
+// Relation Produit / Maux
+Produit.hasMany(Maux, {
+  foreignKey: 'IdProduit',
+  as: 'maux'
+});
+Maux.belongsTo(Produit, {
+  foreignKey: 'IdProduit',
+  as: 'produit'
+});
 
-// // Relation Recette / Maux
-// Maux.hasMany(Recettes, {
-//   foreignKey: 'IdMaux',
-//   as: 'recettes'
-// });
-// Recettes.belongsTo(Maux, {
-//   foreignKey: 'IdMaux',
-//   as: 'maux'
-// });
+// Relation Recette / Maux
+Maux.hasMany(Recettes, {
+  foreignKey: 'IdMaux',
+  as: 'recettes'
+});
+Recettes.belongsTo(Maux, {
+  foreignKey: 'IdMaux',
+  as: 'maux'
+});
 
-// // Relation Users / Placard (1:1)
-// User.hasOne(Placard, {
-//   foreignKey: 'IdUser',
-//   as: 'placard'
-// });
-// Placard.belongsTo(User, {
-//   foreignKey: 'IdUser',
-//   as: 'user'
-// });
+// Relation Users / Placard (1:1)
+User.hasOne(Placard, {
+  foreignKey: 'IdUser',
+  as: 'placard'
+});
+Placard.belongsTo(User, {
+  foreignKey: 'IdUser',
+  as: 'user'
+});
 
-// // Relation Placard / Produit (plusieurs produits dans le placard)
-// Produit.hasMany(Placard, {
-//   foreignKey: 'IdProduit',
-//   as: 'placements'
-// });
-// Placard.belongsTo(Produit, {
-//   foreignKey: 'IdProduit',
-//   as: 'produits'
-// });
+// Relation Placard / Produit (plusieurs produits dans le placard)
+Produit.hasMany(Placard, {
+  foreignKey: 'IdProduit',
+  as: 'placements'
+});
+Placard.belongsTo(Produit, {
+  foreignKey: 'IdProduit',
+  as: 'produits'
+});
 
 
 // Synchronisation de la base conditionnelle
