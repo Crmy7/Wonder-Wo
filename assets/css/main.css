@@ -1,0 +1,239 @@
+@import "tailwindcss";
+
+/* Police Open Sauce Sans */
+@font-face {
+    font-family: 'Open Sauce Sans';
+    src: url('@/assets/fonts/open-sauce/OpenSauceSans-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Open Sauce Sans';
+    src: url('@/assets/fonts/open-sauce/OpenSauceSans-LightItalic.ttf') format('truetype');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Open Sauce Sans';
+    src: url('@/assets/fonts/open-sauce/OpenSauceSans-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Open Sauce Sans';
+    src: url('@/assets/fonts/open-sauce/OpenSauceSans-Italic.ttf') format('truetype');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Open Sauce Sans';
+    src: url('@/assets/fonts/open-sauce/OpenSauceSans-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Open Sauce Sans';
+    src: url('@/assets/fonts/open-sauce/OpenSauceSans-MediumItalic.ttf') format('truetype');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Open Sauce Sans';
+    src: url('@/assets/fonts/open-sauce/OpenSauceSans-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Open Sauce Sans';
+    src: url('@/assets/fonts/open-sauce/OpenSauceSans-SemiBoldItalic.ttf') format('truetype');
+    font-weight: 600;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Open Sauce Sans';
+    src: url('@/assets/fonts/open-sauce/OpenSauceSans-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Open Sauce Sans';
+    src: url('@/assets/fonts/open-sauce/OpenSauceSans-BoldItalic.ttf') format('truetype');
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Open Sauce Sans';
+    src: url('@/assets/fonts/open-sauce/OpenSauceSans-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Open Sauce Sans';
+    src: url('@/assets/fonts/open-sauce/OpenSauceSans-ExtraBoldItalic.ttf') format('truetype');
+    font-weight: 800;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Open Sauce Sans';
+    src: url('@/assets/fonts/open-sauce/OpenSauceSans-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Open Sauce Sans';
+    src: url('@/assets/fonts/open-sauce/OpenSauceSans-BlackItalic.ttf') format('truetype');
+    font-weight: 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* Police Hashtag (accent) */
+@font-face {
+    font-family: 'Hashtag';
+    src: url('@/assets/fonts/hashtag/Hashtag.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Police Effloresce */
+@font-face {
+    font-family: 'Effloresce';
+    src: url('@/assets/fonts/effloresce/Effloresce.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Effloresce';
+    src: url('@/assets/fonts/effloresce/Effloresce It.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Effloresce';
+    src: url('@/assets/fonts/effloresce/Effloresce Bd.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Effloresce';
+    src: url('@/assets/fonts/effloresce/Effloresce Bd It.otf') format('opentype');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Effloresce Antique';
+    src: url('@/assets/fonts/effloresce/Effloresce Antique.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@theme {
+    --color-primary: #94473d;
+    --color-secondary: #e0591c;
+    --color-beige: #fcfbe6;
+    --color-blanc: #fcfaf2;
+    --color-grey-black: #211f1c;
+    
+    --font-family-sans: 'Open Sauce Sans', system-ui, -apple-system, sans-serif;
+    --font-family-hashtag: 'Hashtag', sans-serif;
+    --font-family-effloresce: 'Effloresce', serif;
+    --font-family-effloresce-antique: 'Effloresce Antique', serif;
+}
+
+@layer base {
+    body {
+        font-family: var(--font-family-sans);
+        @apply text-grey-black;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+    
+    body h1,
+    body h2,
+    body h3,
+    body h4,
+    body h5,
+    body h6 {
+        @apply text-primary;
+        font-family: var(--font-family-effloresce);
+    }
+
+    button.primary-btn, a.primary-btn{
+        @apply bg-primary text-blanc rounded-full px-4 py-2 hover:bg-secondary transition-all duration-300;
+    }
+
+    button.secondary-btn, a.secondary-btn{
+        @apply bg-secondary text-blanc rounded-full px-4 py-2 hover:bg-primary transition-all duration-300;
+    }
+}
+
+@layer utilities {
+    .font-sans {
+        font-family: var(--font-family-sans);
+    }
+    
+    .font-hashtag {
+        font-family: var(--font-family-hashtag);
+    }
+    
+    .font-effloresce {
+        font-family: var(--font-family-effloresce);
+    }
+    
+    .font-effloresce-antique {
+        font-family: var(--font-family-effloresce-antique);
+    }
+}
+
+@layer components {
+    .accent-text {
+        font-family: var(--font-family-hashtag);
+        @apply text-secondary font-normal;
+    }
+    
+    .accent-text-primary {
+        font-family: var(--font-family-hashtag);
+        @apply text-primary font-normal;
+    }
+    
+    .accent-text-large {
+        font-family: var(--font-family-hashtag);
+        @apply text-secondary text-xl font-normal;
+    }
+}
