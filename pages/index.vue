@@ -81,9 +81,31 @@
               Se connecter
             </NuxtLink>
           </div>
+          
+          <!-- Bouton pour revoir l'onboarding -->
+          <div class="mt-6">
+            <button 
+              @click="showOnboardingAgain"
+              class="onboarding-trigger"
+            >
+              ✨ Revoir la présentation de Wonder Wo
+            </button>
+          </div>
         </div>
         <div v-else-if="!authStore.loading && authStore.isLoggedIn">
-          <p>Vous êtes déjà connecté</p>
+          <div class="space-y-4">
+            <p class="text-grey-black">Vous êtes déjà connecté !</p>
+            
+            <!-- Bouton pour utilisateurs connectés -->
+            <div>
+              <button 
+                @click="showOnboardingAgain"
+                class="onboarding-trigger"
+              >
+                ✨ Revoir la présentation de Wonder Wo
+              </button>
+            </div>
+          </div>
         </div>
         <div v-else-if="authStore.loading">
           <p class="text-center text-grey-black">Chargement...</p>
@@ -95,16 +117,32 @@
     <footer class="py-8 mt-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <p class="text-gray-500">© 2024 Wonder Wo - Votre bien-être naturel</p>
+        
+        <!-- Lien discret dans le footer pour relancer l'onboarding -->
+        <div class="mt-4">
+          <button 
+            @click="showOnboardingAgain"
+            class="text-xs text-gray-400 hover:text-primary transition-colors duration-300"
+          >
+            Guide de l'application
+          </button>
+        </div>
       </div>
     </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-const authStore = useAuthStore();
+const authStore = useAuthStore()
+const onboardingStore = useOnboardingStore()
 
 // Configuration de la page
 definePageMeta({
   layout: false,
-});
+})
+
+// Fonction pour relancer l'onboarding
+const showOnboardingAgain = () => {
+  onboardingStore.showOnboarding()
+}
 </script>

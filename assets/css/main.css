@@ -219,6 +219,31 @@
     .font-effloresce-antique {
         font-family: var(--font-family-effloresce-antique);
     }
+    
+    /* Classes pour les couleurs personnalisées */
+    .bg-primary { background-color: var(--color-primary); }
+    .bg-secondary { background-color: var(--color-secondary); }
+    .bg-beige { background-color: var(--color-beige); }
+    .bg-blanc { background-color: var(--color-blanc); }
+    .bg-grey-black { background-color: var(--color-grey-black); }
+    
+    .text-primary { color: var(--color-primary); }
+    .text-secondary { color: var(--color-secondary); }
+    .text-beige { color: var(--color-beige); }
+    .text-blanc { color: var(--color-blanc); }
+    .text-grey-black { color: var(--color-grey-black); }
+    
+    .border-primary { border-color: var(--color-primary); }
+    .border-secondary { border-color: var(--color-secondary); }
+    .border-beige { border-color: var(--color-beige); }
+    .border-blanc { border-color: var(--color-blanc); }
+    .border-grey-black { border-color: var(--color-grey-black); }
+    
+    .ring-primary { --tw-ring-color: var(--color-primary); }
+    .ring-secondary { --tw-ring-color: var(--color-secondary); }
+    .ring-beige { --tw-ring-color: var(--color-beige); }
+    .ring-blanc { --tw-ring-color: var(--color-blanc); }
+    .ring-grey-black { --tw-ring-color: var(--color-grey-black); }
 }
 
 @layer components {
@@ -235,5 +260,20 @@
     .accent-text-large {
         font-family: var(--font-family-hashtag);
         @apply text-secondary text-xl font-normal;
+    }
+    
+    /* Bouton pour relancer l'onboarding */
+    .onboarding-trigger {
+        @apply text-sm text-grey-black/60 hover:text-primary transition-all duration-300 underline decoration-dotted underline-offset-2;
+        font-family: var(--font-family-sans);
+    }
+    
+    .onboarding-trigger:hover {
+        @apply decoration-solid;
+    }
+    
+    /* Motif de fond pour l'onboarding */
+    .onboarding-pattern {
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23fcfbe6' fill-opacity='0.1'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     }
 }
