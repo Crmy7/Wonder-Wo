@@ -3,8 +3,10 @@
     <!-- Header -->
     <header class="py-8">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-4xl font-bold  text-center">Wonder Wo</h1>
-        <p class="text-xl text-center mt-2">Vos remèdes naturels personnalisés</p>
+        <h1 class="text-4xl font-bold text-center">Wonder Wo</h1>
+        <p class="text-xl text-center mt-2">
+          Vos remèdes naturels personnalisés
+        </p>
       </div>
     </header>
 
@@ -15,53 +17,76 @@
           Découvrez les bienfaits de la nature
         </h2>
         <p class="text-lg mb-8 max-w-3xl mx-auto">
-          Wonder Wo vous accompagne dans votre recherche de bien-être naturel. 
-          Recevez des recommandations personnalisées de remèdes naturels adaptés à vos symptômes, 
-          votre profil et les produits de votre placard.
+          Wonder Wo vous accompagne dans votre recherche de bien-être naturel.
+          Recevez des recommandations personnalisées de remèdes naturels adaptés
+          à vos symptômes, votre profil et les produits de votre placard.
         </p>
-        
+
         <!-- Features -->
         <div class="grid md:grid-cols-3 gap-8 mb-12">
           <div class="bg-white p-6 rounded-xl shadow-lg">
-            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <div
+              class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4"
+            >
               🤖
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">IA Personnalisée</h3>
-            <p class="text-gray-600">Recommandations adaptées à votre profil et vos besoins spécifiques</p>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+              IA Personnalisée
+            </h3>
+            <p class="text-gray-600">
+              Recommandations adaptées à votre profil et vos besoins spécifiques
+            </p>
           </div>
-          
+
           <div class="bg-white p-6 rounded-xl shadow-lg">
-            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <div
+              class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4"
+            >
               🌿
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">Placard Virtuel</h3>
-            <p class="text-gray-600">Gérez vos produits naturels et optimisez leurs utilisations</p>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+              Placard Virtuel
+            </h3>
+            <p class="text-gray-600">
+              Gérez vos produits naturels et optimisez leurs utilisations
+            </p>
           </div>
-          
+
           <div class="bg-white p-6 rounded-xl shadow-lg">
-            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <div
+              class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4"
+            >
               📚
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">Bibliothèque</h3>
-            <p class="text-gray-600">Consultez notre base de données complète de remèdes naturels</p>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+              Bibliothèque
+            </h3>
+            <p class="text-gray-600">
+              Consultez notre base de données complète de remèdes naturels
+            </p>
           </div>
         </div>
-        
+
         <!-- CTA Buttons -->
-        <div class="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
-          <NuxtLink
-            to="/register"
-            class="primary-btn"
+        <!-- Only if not logged in -->
+        <div v-if="!authStore.loading && !authStore.isLoggedIn">
+          <div
+            class="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center"
           >
-            Commencer gratuitement
-          </NuxtLink>
-          
-          <NuxtLink
-            to="/login"
-            class="secondary-btn"
-          >
-            Se connecter
-          </NuxtLink>
+            <NuxtLink to="/register" class="primary-btn">
+              Commencer gratuitement
+            </NuxtLink>
+
+            <NuxtLink to="/login" class="secondary-btn">
+              Se connecter
+            </NuxtLink>
+          </div>
+        </div>
+        <div v-else-if="!authStore.loading && authStore.isLoggedIn">
+          <p>Vous êtes déjà connecté</p>
+        </div>
+        <div v-else-if="authStore.loading">
+          <p class="text-center text-grey-black">Chargement...</p>
         </div>
       </div>
     </main>
@@ -76,8 +101,10 @@
 </template>
 
 <script setup lang="ts">
+const authStore = useAuthStore();
+
 // Configuration de la page
 definePageMeta({
-  layout: false
-})
+  layout: false,
+});
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <main class="main-content">
-    <NuxtPage />
+      <NuxtPage />
     </main>
     <MobileNav />
   </div>
@@ -9,13 +9,15 @@
 
 <style>
 .main-content {
-  padding-bottom: 80px; /* Espace pour la navigation mobile */
+  /* Espace pour navigation mobile en bas */
+  padding-bottom: 80px;
 }
 
-/* Sur desktop, pas besoin de padding */
+/* Sur desktop, espace pour navigation en haut */
 @media (min-width: 768px) {
   .main-content {
     padding-bottom: 0;
+    padding-top: 64px; /* Hauteur de la nav desktop */
   }
 }
 </style>

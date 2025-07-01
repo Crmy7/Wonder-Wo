@@ -77,6 +77,43 @@
             </NuxtLink>
           </p>
         </div>
+
+        <!-- Debug Section (temporaire) -->
+        <div class="bg-primary/5 p-4 rounded-xl border border-primary/20 mt-6">
+          <h4 class="text-sm font-semibold mb-3 accent-text">🔧 Debug Auth (temporaire)</h4>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <button
+              @click="debugAuth.testDirectLogin()"
+              class="bg-secondary/10 hover:bg-secondary/20 text-secondary px-3 py-2 rounded-lg transition-colors"
+            >
+              Test API direct
+            </button>
+            <button
+              @click="debugAuth.testStoreLogin()"
+              class="bg-primary/10 hover:bg-primary/20 text-primary px-3 py-2 rounded-lg transition-colors"
+            >
+              Test Store
+            </button>
+            <button
+              @click="debugAuth.testCheckAuth()"
+              class="bg-beige hover:bg-beige/80 text-grey-black px-3 py-2 rounded-lg transition-colors"
+            >
+              Test checkAuth
+            </button>
+            <button
+              @click="debugAuth.showCurrentState()"
+              class="bg-beige hover:bg-beige/80 text-grey-black px-3 py-2 rounded-lg transition-colors"
+            >
+              État actuel
+            </button>
+          </div>
+          <button
+            @click="debugAuth.testAllEndpoints()"
+            class="w-full mt-2 bg-primary/10 hover:bg-primary/20 text-primary px-3 py-2 rounded-lg transition-colors text-xs"
+          >
+            🧪 Test complet
+          </button>
+        </div>
       </form>
     </div>
   </div>
@@ -90,6 +127,7 @@ definePageMeta({
 
 // Store d'authentification
 const authStore = useAuthStore()
+const debugAuth = useDebugAuth()
 
 // État du formulaire
 const form = reactive({
@@ -115,19 +153,29 @@ onMounted(async () => {
 const handleLogin = async () => {
   success.value = ''
   
+  console.log('🚀 Login page - Début de handleLogin')
+  
   try {
     const result = await authStore.login(form.email, form.password)
     
+    console.log('✅ Login page - Résultat reçu du store:', result)
     success.value = result.message || 'Connexion réussie !'
     
     // Redirection après connexion réussie
     setTimeout(() => {
+      console.log('🔄 Login page - Redirection vers /profil')
       navigateTo('/profil')
     }, 1500)
     
   } catch (err: any) {
-    console.error('Erreur connexion:', err)
-    // L'erreur est déjà gérée dans le store
+    console.error('❌ Login page - Erreur capturée:', err)
+    // L'erreur est déjà gérée dans le store, mais on peut ajouter des logs
+    console.log('📊 Login page - État du store après erreur:', {
+      isLoggedIn: authStore.isLoggedIn,
+      user: authStore.user,
+      error: authStore.error,
+      loading: authStore.loading
+    })
   }
 }
 </script> 

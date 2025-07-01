@@ -8,12 +8,77 @@
         <p class="accent-text text-3xl">Créez des profils personnalisés pour chaque membre</p>
       </div>
 
+      <!-- Switch de profil actif -->
+      <div v-if="hasProfiles" class="bg-primary/5 backdrop-blur-sm p-6 rounded-2xl border border-primary/20 mb-8 z-10 relative">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+              <span class="text-lg font-bold text-primary">{{ currentProfil?.nom?.charAt(0) || 'P' }}</span>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold">Profil actif : {{ currentProfil?.nom || 'Aucun' }}</h3>
+              <p class="text-sm text-grey-black/60">
+                {{ currentProfil?.age }} ans
+                <template v-if="currentProfil?.grossesse"> • Enceinte</template>
+                <template v-if="currentProfil?.enfants"> • Parent</template>
+              </p>
+            </div>
+          </div>
+          
+          <!-- Dropdown switch profil -->
+          <div class="relative">
+                          <button
+                @click="showProfilSwitch = !showProfilSwitch"
+                class="flex items-center space-x-2 px-4 py-2 bg-primary text-blanc rounded-lg hover:bg-primary/90 transition-all duration-200"
+              >
+              <span class="font-medium">Changer de profil</span>
+              <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': showProfilSwitch }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+
+            <!-- Dropdown -->
+            <div v-if="showProfilSwitch" class="absolute top-full right-0 mt-2 w-72 bg-[var(--color-blanc)] rounded-xl shadow-lg border border-beige overflow-hidden animate-slideDown z-[999]">
+              <div class="p-3 border-b border-beige">
+                <p class="text-sm font-medium text-grey-black">Sélectionner un profil</p>
+              </div>
+              <div class="max-h-60 overflow-y-auto">
+                <div
+                  v-for="profil in profils"
+                  :key="profil.id"
+                  @click="selectProfil(profil)"
+                  class="flex items-center space-x-3 px-3 py-3 hover:bg-beige cursor-pointer transition-colors"
+                  :class="{ 'bg-beige': currentProfil?.id === profil.id }"
+                >
+                  <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                    <span class="text-sm font-bold text-primary">{{ profil.nom.charAt(0) }}</span>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium text-grey-black">{{ profil.nom }}</p>
+                    <div class="flex items-center space-x-2 text-xs text-grey-black/60">
+                      <span>{{ profil.age }} ans</span>
+                      <span v-if="profil.grossesse" class="bg-primary/10 text-primary px-2 py-0.5 rounded-full">🤱 Enceinte</span>
+                      <span v-if="profil.enfants" class="bg-primary/10 text-primary px-2 py-0.5 rounded-full">👨‍👩‍👧‍👦 Parent</span>
+                    </div>
+                  </div>
+                  <div v-if="currentProfil?.id === profil.id" class="text-primary">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Actions -->
-      <div class="bg-blanc/30 backdrop-blur-sm p-6 rounded-2xl border border-beige mb-8">
+      <div class="bg-beige/30 backdrop-blur-sm p-6 rounded-2xl border border-beige mb-8">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
             <h3 class="text-xl font-semibold mb-1">Mes Profils</h3>
-            <p class="text-3xl accent-text">{{ profils.length }} profil(s)</p>
+            <p class="text-3xl accent-text">{{ profilCount }} profil(s)</p>
           </div>
           <div class="flex flex-col sm:flex-row gap-3">
             <button
@@ -32,6 +97,18 @@
               <span v-else>Se déconnecter</span>
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- Messages d'erreur du store -->
+      <div v-if="error" class="bg-secondary/10 border border-secondary/20 rounded-xl p-4 mb-6">
+        <div class="flex justify-between items-start">
+          <p class="text-secondary text-sm font-medium">{{ error }}</p>
+          <button @click="clearError()" class="text-secondary hover:text-secondary/80">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -76,7 +153,7 @@
           
           <!-- Options spéciales -->
           <div class="space-y-4">
-            <div class="flex items-center p-3 bg-blanc/20 rounded-xl">
+            <div class="flex items-center p-3 bg-beige/20 rounded-xl">
               <input
                 id="grossesse"
                 v-model="newProfil.grossesse"
@@ -88,7 +165,7 @@
               </label>
             </div>
             
-            <div class="flex items-center p-3 bg-blanc/20 rounded-xl">
+            <div class="flex items-center p-3 bg-beige/20 rounded-xl">
               <input
                 id="enfants"
                 v-model="newProfil.enfants"
@@ -114,10 +191,10 @@
           <div class="flex flex-col sm:flex-row gap-3">
             <button
               type="submit"
-              :disabled="createLoading"
+              :disabled="loading"
               class="primary-btn flex-1"
             >
-              <span v-if="createLoading">Création...</span>
+              <span v-if="loading">Création...</span>
               <span v-else>Créer le profil</span>
             </button>
             
@@ -134,8 +211,8 @@
 
       <!-- Liste des profils -->
       <div class="space-y-6">
-        <div v-if="profils.length === 0" class="bg-blanc p-8 rounded-2xl border border-beige text-center">
-          <div class="w-20 h-20 bg-blanc/40 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div v-if="!hasProfiles" class="bg-blanc p-8 rounded-2xl border border-beige text-center">
+          <div class="w-20 h-20 bg-beige/40 rounded-full flex items-center justify-center mx-auto mb-6">
             <span class="text-3xl">👨‍👩‍👧‍👦</span>
           </div>
           <h3 class="text-lg font-semibold mb-3">Aucun profil créé</h3>
@@ -157,13 +234,20 @@
                 <span class="bg-primary/10 text-primary text-sm font-medium px-3 py-1 rounded-full">
                   {{ profil.age }} ans
                 </span>
+                <!-- Indicateur profil actif -->
+                <span v-if="currentProfil?.id === profil.id" class="bg-primary text-blanc text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  ACTIF
+                </span>
               </div>
               
               <div class="flex flex-wrap gap-2 text-sm">
-                <span v-if="profil.grossesse" class="bg-blanc text-grey-black px-3 py-1 rounded-full flex items-center gap-1">
+                <span v-if="profil.grossesse" class="bg-beige text-grey-black px-3 py-1 rounded-full flex items-center gap-1">
                   🤱 <span class="font-hashtag text-xl">Enceinte</span>
                 </span>
-                <span v-if="profil.enfants" class="bg-blanc text-grey-black px-3 py-1 rounded-full flex items-center gap-1">
+                <span v-if="profil.enfants" class="bg-beige text-grey-black px-3 py-1 rounded-full flex items-center gap-1">
                   👨‍👩‍👧‍👦 <span class="font-hashtag text-xl">Parent</span>
                 </span>
                 <span v-if="!profil.grossesse && !profil.enfants" class="accent-text-primary text-xl">
@@ -172,13 +256,24 @@
               </div>
             </div>
             
-            <button
-              @click="handleDeleteProfil(profil.id)"
-              :disabled="deleteLoading"
-              class="text-secondary hover:text-primary text-sm font-medium transition-colors opacity-60 group-hover:opacity-100"
-            >
-              Supprimer
-            </button>
+            <div class="flex items-center gap-2">
+              <!-- Bouton Activer si pas déjà actif -->
+              <button
+                v-if="currentProfil?.id !== profil.id"
+                @click="selectProfil(profil)"
+                class="text-primary hover:bg-primary/10 text-sm font-medium px-3 py-1 rounded-lg transition-colors"
+              >
+                Activer
+              </button>
+              
+              <button
+                @click="handleDeleteProfil(profil.id)"
+                :disabled="loading"
+                class="text-secondary hover:text-primary text-sm font-medium transition-colors opacity-60 group-hover:opacity-100"
+              >
+                Supprimer
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -213,34 +308,176 @@
 </template>
 
 <script setup lang="ts">
+import type { CreateProfilData } from '~/types/profil'
+
 // Configuration de la page
 definePageMeta({
   layout: false,
   middleware: 'auth'
 })
 
-// Store d'authentification
+// Composables
 const authStore = useAuthStore()
+const { 
+  profils, 
+  currentProfil, 
+  hasProfiles, 
+  profilCount,
+  error,
+  loading,
+  selectProfil: selectProfilStore,
+  createProfil: createProfilStore,
+  deleteProfil: deleteProfilStore,
+  clearError,
+  initProfils,
+  resetStore 
+} = useProfils()
 
-// État global
-const loading = ref(false)
-const profils = ref<any[]>([])
+// Composable pour la gestion du formulaire de création
+const useCreateProfilForm = () => {
+  const showCreateForm = ref(false)
+  const createError = ref('')
+  const createSuccess = ref('')
 
-// Formulaire de création
-const showCreateForm = ref(false)
-const createLoading = ref(false)
-const createError = ref('')
-const createSuccess = ref('')
-const deleteLoading = ref(false)
+  const newProfil = reactive<CreateProfilData>({
+    nom: '',
+    age: 0,
+    grossesse: false,
+    enfants: false
+  })
 
-const newProfil = reactive({
-  nom: '',
-  age: '',
-  grossesse: false,
-  enfants: false
-})
+  const resetForm = () => {
+    newProfil.nom = ''
+    newProfil.age = 0
+    newProfil.grossesse = false
+    newProfil.enfants = false
+    createError.value = ''
+    createSuccess.value = ''
+  }
 
-// Charger les profils au montage
+  const submitForm = async () => {
+    createError.value = ''
+    createSuccess.value = ''
+    
+    try {
+      const result = await createProfilStore({
+        nom: newProfil.nom,
+        age: Number(newProfil.age),
+        grossesse: newProfil.grossesse,
+        enfants: newProfil.enfants
+      })
+      
+      createSuccess.value = result.message || 'Profil créé avec succès !'
+      resetForm()
+      
+      // Masquer le formulaire après 2 secondes
+      setTimeout(() => {
+        showCreateForm.value = false
+      }, 2000)
+      
+    } catch (error: any) {
+      console.error('Erreur création profil:', error)
+      createError.value = error.statusMessage || 'Erreur lors de la création du profil'
+    }
+  }
+
+  return {
+    showCreateForm,
+    createError,
+    createSuccess,
+    newProfil,
+    resetForm,
+    submitForm
+  }
+}
+
+// Composable pour la gestion du switch de profil
+const useProfilSwitch = () => {
+  const showProfilSwitch = ref(false)
+
+  const selectProfil = async (profil: any) => {
+    try {
+      await selectProfilStore(profil)
+      showProfilSwitch.value = false
+    } catch (error) {
+      console.error('Erreur sélection profil:', error)
+    }
+  }
+
+  // Fermer le dropdown au clic extérieur
+  onMounted(() => {
+    if (process.client) {
+      const closeDropdown = (event: Event) => {
+        if (!(event.target as Element).closest('.relative')) {
+          showProfilSwitch.value = false
+        }
+      }
+      document.addEventListener('click', closeDropdown)
+      
+      onUnmounted(() => {
+        document.removeEventListener('click', closeDropdown)
+      })
+    }
+  })
+
+  return {
+    showProfilSwitch,
+    selectProfil
+  }
+}
+
+// Composable pour la gestion des actions sur les profils
+const useProfilActions = () => {
+  const deleteProfil = async (profilId: number) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce profil ?')) {
+      return
+    }
+    
+    try {
+      await deleteProfilStore(profilId)
+    } catch (error: any) {
+      console.error('Erreur suppression profil:', error)
+      alert('Erreur lors de la suppression du profil')
+    }
+  }
+
+  const logout = async () => {
+    try {
+      await authStore.logout()
+      resetStore()
+      await navigateTo('/')
+    } catch (error) {
+      console.error('Erreur déconnexion:', error)
+    }
+  }
+
+  return {
+    deleteProfil,
+    logout
+  }
+}
+
+// Utilisation des composables
+const { 
+  showCreateForm, 
+  createError, 
+  createSuccess, 
+  newProfil, 
+  resetForm: resetCreateForm, 
+  submitForm: handleCreateProfil 
+} = useCreateProfilForm()
+
+const { 
+  showProfilSwitch, 
+  selectProfil 
+} = useProfilSwitch()
+
+const { 
+  deleteProfil: handleDeleteProfil, 
+  logout: handleLogout 
+} = useProfilActions()
+
+// Initialisation
 onMounted(async () => {
   // Vérifier l'authentification
   await authStore.checkAuth()
@@ -249,100 +486,24 @@ onMounted(async () => {
     return
   }
   
-  await loadProfils()
+  // Charger les profils
+  await initProfils()
 })
+</script>
 
-// Charger les profils
-const loadProfils = async () => {
-  try {
-    const data = await $fetch('/api/profil/list')
-    profils.value = data.profils || []
-  } catch (error: any) {
-    console.error('Erreur chargement profils:', error)
-    // En cas d'erreur auth, rediriger vers login
-    if (error.statusCode === 401) {
-      await navigateTo('/login')
-    }
+<style scoped>
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-// Créer un profil
-const handleCreateProfil = async () => {
-  createError.value = ''
-  createSuccess.value = ''
-  createLoading.value = true
-  
-  try {
-    const data = await $fetch('/api/profil/create', {
-      method: 'POST',
-      body: {
-        nom: newProfil.nom,
-        age: parseInt(newProfil.age),
-        grossesse: newProfil.grossesse,
-        enfants: newProfil.enfants
-      }
-    })
-    
-    createSuccess.value = data.message
-    
-    // Recharger la liste et réinitialiser le formulaire
-    await loadProfils()
-    resetCreateForm()
-    
-    // Masquer le formulaire après 2 secondes
-    setTimeout(() => {
-      showCreateForm.value = false
-    }, 2000)
-    
-  } catch (error: any) {
-    console.error('Erreur création profil:', error)
-    createError.value = error.statusMessage || 'Erreur lors de la création du profil'
-  } finally {
-    createLoading.value = false
-  }
+.animate-slideDown {
+  animation: slideDown 0.2s ease-out;
 }
-
-// Supprimer un profil
-const handleDeleteProfil = async (profilId: number) => {
-  if (!confirm('Êtes-vous sûr de vouloir supprimer ce profil ?')) {
-    return
-  }
-  
-  deleteLoading.value = true
-  
-  try {
-    await $fetch(`/api/profil/${profilId}`, {
-      method: 'DELETE'
-    })
-    
-    // Recharger la liste
-    await loadProfils()
-    
-  } catch (error: any) {
-    console.error('Erreur suppression profil:', error)
-    alert('Erreur lors de la suppression du profil')
-  } finally {
-    deleteLoading.value = false
-  }
-}
-
-// Réinitialiser le formulaire
-const resetCreateForm = () => {
-  newProfil.nom = ''
-  newProfil.age = ''
-  newProfil.grossesse = false
-  newProfil.enfants = false
-  createError.value = ''
-  createSuccess.value = ''
-}
-
-// Déconnexion
-const handleLogout = async () => {
-  try {
-    await authStore.logout()
-    await navigateTo('/')
-  } catch (error) {
-    console.error('Erreur déconnexion:', error)
-  }
-}
-</script> 
+</style> 

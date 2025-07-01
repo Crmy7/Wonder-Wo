@@ -51,62 +51,45 @@ export default defineEventHandler(async (event) => {
           id: user.id,
           email: user.email
         },
-        message: 'Connexion réussie !'
+        message: 'Connexion réussie avec base de données MySQL'
       }
 
-    } catch (dbError: any) {
-      // Si c'est une erreur d'authentification (401), la remonter directement
-      if (dbError.statusCode === 401) {
-        throw dbError
-      }
+    } catch (dbError) {
+      // Fallback vers le système simple si MySQL pas dispo
+      console.log('MySQL non disponible, utilisation du système mémoire')
       
-      // Sinon, c'est une vraie erreur de base de données, utiliser le fallback
-      console.log('Erreur base de données, utilisation du système mémoire:', dbError.message)
-      
-      try {
-        const user = await findUserByEmail(email)
-        if (!user) {
-          throw createError({
-            statusCode: 401,
-            statusMessage: 'Email ou mot de passe incorrect'
-          })
-        }
-
-        const isValidPassword = await verifyPassword(password, user.password)
-        if (!isValidPassword) {
-          throw createError({
-            statusCode: 401,
-            statusMessage: 'Email ou mot de passe incorrect'
-          })
-        }
-
-        const token = generateToken(user.id)
-
-        setCookie(event, 'auth_token', token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
-          maxAge: 60 * 60 * 24 * 7
-        })
-
-        return {
-          success: true,
-          user: {
-            id: user.id,
-            email: user.email
-          },
-          message: 'Connexion réussie (système de secours) !'
-        }
-      } catch (fallbackError: any) {
-        // Si même le fallback échoue, remonter l'erreur
-        if (fallbackError.statusCode === 401) {
-          throw fallbackError
-        }
-        
+      const user = await findUserByEmail(email)
+      if (!user) {
         throw createError({
-          statusCode: 500,
-          statusMessage: 'Erreur système lors de la connexion'
+          statusCode: 401,
+          statusMessage: 'Email ou mot de passe incorrect'
         })
+      }
+
+      const isValidPassword = await verifyPassword(password, user.password)
+      if (!isValidPassword) {
+        throw createError({
+          statusCode: 401,
+          statusMessage: 'Email ou mot de passe incorrect'
+        })
+      }
+
+      const token = generateToken(user.id)
+
+      setCookie(event, 'auth_token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 60 * 60 * 24 * 7
+      })
+
+      return {
+        success: true,
+        user: {
+          id: user.id,
+          email: user.email
+        },
+        message: 'Connexion réussie (mode développement sans MySQL)'
       }
     }
 

@@ -1,6 +1,18 @@
+// Types
+interface User {
+  id: number
+  email: string
+}
+
+interface AuthResponse {
+  success: boolean
+  user: User
+  message: string
+}
+
 export const useAuthStore = defineStore('auth', () => {
   // État de l'utilisateur
-  const user = ref<{ id: number; email: string } | null>(null)
+  const user = ref<User | null>(null)
   const isLoggedIn = computed(() => !!user.value)
   const loading = ref(false)
   const error = ref('')
@@ -10,24 +22,54 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = ''
     
+    console.log('🔍 Store login - Début de la connexion pour:', email)
+    
     try {
-      const data = await $fetch('/api/auth/login', {
+      console.log('📡 Store login - Envoi de la requête à /api/auth/login')
+      
+      const data = await $fetch<AuthResponse>('/api/auth/login', {
         method: 'POST',
         body: { email, password }
       })
       
-      // Le cookie est défini automatiquement par le serveur
-      user.value = data.user
+      console.log('📥 Store login - Réponse reçue:', data)
       
-      return {
-        success: true,
-        message: data.message
+      // Vérifier si la réponse indique un succès
+      if (data.success && data.user) {
+        console.log('✅ Store login - Connexion réussie, mise à jour de l\'état utilisateur')
+        // Le cookie est défini automatiquement par le serveur
+        user.value = data.user
+        
+        return {
+          success: true,
+          message: data.message
+        }
+      } else {
+        console.error('❌ Store login - Réponse inattendue:', { success: data.success, hasUser: !!data.user })
+        // Réponse inattendue
+        error.value = 'Réponse inattendue du serveur'
+        throw new Error('Réponse inattendue du serveur')
       }
     } catch (err: any) {
-      error.value = err.statusMessage || err.message || 'Erreur lors de la connexion'
+      console.error('🚨 Store login - Erreur capturée:', {
+        message: err.message,
+        statusCode: err.statusCode,
+        statusMessage: err.statusMessage,
+        data: err.data,
+        fullError: err
+      })
+      
+      // Si c'est une erreur de réseau ou serveur
+      if (err.statusCode) {
+        error.value = err.statusMessage || err.message || 'Erreur lors de la connexion'
+      } else {
+        error.value = err.message || 'Erreur de connexion au serveur'
+      }
+      
       throw err
     } finally {
       loading.value = false
+      console.log('🏁 Store login - Fin du processus de connexion')
     }
   }
 
@@ -37,7 +79,7 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = ''
     
     try {
-      const data = await $fetch('/api/auth/register', {
+      const data = await $fetch<AuthResponse>('/api/auth/register', {
         method: 'POST',
         body: { email, password }
       })
@@ -70,6 +112,15 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = null
       error.value = ''
       
+      // Reset du store profils si disponible
+      try {
+        const profilStore = useProfilStore()
+        profilStore.resetStore()
+      } catch (e) {
+        // Le store profils n'est peut-être pas encore initialisé
+        console.log('Store profils non disponible lors de la déconnexion')
+      }
+      
       return {
         success: true,
         message: 'Déconnexion réussie'
@@ -79,6 +130,14 @@ export const useAuthStore = defineStore('auth', () => {
       // Même si l'API échoue, on efface l'état local
       user.value = null
       error.value = ''
+      
+      // Reset du store profils même en cas d'erreur
+      try {
+        const profilStore = useProfilStore()
+        profilStore.resetStore()
+      } catch (e) {
+        console.log('Store profils non disponible lors de la déconnexion')
+      }
     } finally {
       loading.value = false
     }
@@ -88,7 +147,7 @@ export const useAuthStore = defineStore('auth', () => {
   const checkAuth = async () => {
     // On vérifie si l'utilisateur est connecté côté serveur
     try {
-      const data = await $fetch('/api/auth/me')
+      const data = await $fetch<AuthResponse>('/api/auth/me')
       user.value = data.user
     } catch (err) {
       // Si erreur, l'utilisateur n'est pas connecté
