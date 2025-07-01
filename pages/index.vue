@@ -52,7 +52,7 @@
             </p>
           </div>
 
-          <div class="bg-white p-6 rounded-xl shadow-lg">
+          <a class="bg-white p-6 rounded-xl shadow-lg" href="/library">
             <div
               class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4"
             >
@@ -64,7 +64,7 @@
             <p class="text-gray-600">
               Consultez notre base de données complète de remèdes naturels
             </p>
-          </div>
+          </a>
         </div>
 
         <!-- CTA Buttons -->

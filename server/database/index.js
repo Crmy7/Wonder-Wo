@@ -79,4 +79,4 @@ if (process.env.DB_HOST && process.env.DB_NAME) {
     console.log('⚠️  Configuration MySQL manquante - synchronisation ignorée');
 }
 
-export { sequelize, User, Profil }; 
+export { sequelize, User, Profil, Produit, Recettes, Maux, Placard };
