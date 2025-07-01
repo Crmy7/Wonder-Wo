@@ -20,6 +20,7 @@ export interface PlacardItem {
       source: string
       imageUrl: string
       slug: string
+      inPlacard?: boolean
     }
   }
   
@@ -30,6 +31,7 @@ export interface PlacardItem {
     count?: number
     deletedCount?: number
     message?: string
+    inPlacard?: boolean
   }
   
   export const usePlacard = () => {
