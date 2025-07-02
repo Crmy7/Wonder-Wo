@@ -5,6 +5,7 @@ import Produit from './models/Produits.js';
 import Recettes from './models/Recettes.js';
 import Maux from './models/Maux.js';
 import Placard from './models/Placard.js';
+import UserMauxCourants from './models/UserMauxCourants.js';
 
 // Relations entre les modèles
 User.hasMany(Profil, { 
@@ -105,6 +106,46 @@ Produit.hasMany(Placard, {
   as: 'placardItems'
 });
 
+// ——————————————
+// Users ↔ Maux (via UserMauxCourants)
+// ——————————————
+User.belongsToMany(Maux, {
+  through: UserMauxCourants,
+  foreignKey: 'IdUser',
+  otherKey: 'IdMal',
+  as: 'mauxCourants'
+});
+
+Maux.belongsToMany(User, {
+  through: UserMauxCourants,
+  foreignKey: 'IdMal',
+  otherKey: 'IdUser',
+  as: 'users'
+});
+
+// ——————————————
+// Relations directes UserMauxCourants
+// ——————————————
+UserMauxCourants.belongsTo(User, {
+  foreignKey: 'IdUser',
+  as: 'user'
+});
+
+UserMauxCourants.belongsTo(Maux, {
+  foreignKey: 'IdMal',
+  as: 'mal'
+});
+
+User.hasMany(UserMauxCourants, {
+  foreignKey: 'IdUser',
+  as: 'mauxCourantsItems'
+});
+
+Maux.hasMany(UserMauxCourants, {
+  foreignKey: 'IdMal',
+  as: 'userItems'
+});
+
 // Synchronisation de la base conditionnelle
 if (process.env.DB_HOST && process.env.DB_NAME) {
     sequelize.sync()
@@ -114,4 +155,4 @@ if (process.env.DB_HOST && process.env.DB_NAME) {
     console.log('⚠️  Configuration MySQL manquante - synchronisation ignorée');
 }
 
-export { sequelize, User, Profil, Produit, Recettes, Maux, Placard };
+export { sequelize, User, Profil, Produit, Recettes, Maux, Placard, UserMauxCourants };

@@ -133,36 +133,52 @@
                       />
                     </div>
 
-                    <!-- Sélection des attentes intégrée -->
+                    <!-- Sélection des maux courants -->
                     <div class="pt-2">
                       <label class="block text-sm font-medium mb-3 text-grey-black">
-                        Vos priorités bien-être (optionnel)
+                        Vos maux courants (optionnel)
                       </label>
-                      <div class="grid grid-cols-2 gap-2 mb-3">
+                      <p class="text-xs text-grey-black/60 mb-3">
+                        Sélectionnez les maux que vous rencontrez régulièrement pour des suggestions personnalisées
+                      </p>
+                      
+                      <!-- Chargement des maux -->
+                      <div v-if="mauxLoading" class="text-center py-4">
+                        <div class="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-2"></div>
+                        <p class="text-xs text-grey-black/60">Chargement des maux...</p>
+                      </div>
+                      
+                      <!-- Liste des maux -->
+                      <div v-else class="grid grid-cols-1 gap-2 mb-3 max-h-40 overflow-y-auto">
                         <button
-                          v-for="expectation in onboardingStore.availableExpectations"
-                          :key="expectation"
+                          v-for="mal in availableMaux"
+                          :key="mal.id"
                           type="button"
-                          @click="toggleExpectation(expectation)"
+                          @click="toggleMal(mal.id)"
                           :class="[
-                            'p-2 rounded-lg border transition-all duration-200 text-xs font-medium',
-                            selectedExpectations.includes(expectation)
+                            'p-3 rounded-lg border transition-all duration-200 text-xs font-medium text-left',
+                            selectedMaux.includes(mal.id)
                               ? 'border-primary bg-primary/10 text-primary'
                               : 'border-grey-black/20 bg-blanc hover:border-primary/40 text-grey-black'
                           ]"
                         >
-                          <div class="flex items-center gap-1.5">
-                            <div class="w-3 h-3 rounded border" :class="selectedExpectations.includes(expectation) ? 'bg-primary border-primary' : 'border-grey-black/30'">
-                              <svg v-if="selectedExpectations.includes(expectation)" class="w-2 h-2 text-blanc m-0.5" fill="currentColor" viewBox="0 0 20 20">
+                          <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded border" :class="selectedMaux.includes(mal.id) ? 'bg-primary border-primary' : 'border-grey-black/30'">
+                              <svg v-if="selectedMaux.includes(mal.id)" class="w-2 h-2 text-blanc m-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                               </svg>
                             </div>
-                            <span class="capitalize">{{ expectation }}</span>
+                            <span class="text-lg">{{ mal.icon }}</span>
+                            <div class="flex-1">
+                              <span class="font-medium">{{ mal.symptom }}</span>
+                              <span class="text-xs text-grey-black/50 ml-1">({{ mal.category }})</span>
+                            </div>
                           </div>
                         </button>
                       </div>
+                      
                       <p class="text-xs text-grey-black/60 text-center">
-                        {{ selectedExpectations.length }} priorité(s) sélectionnée(s)
+                        {{ selectedMaux.length }} mal(aux) sélectionné(s)
                       </p>
                     </div>
 
@@ -289,8 +305,10 @@
 const onboardingStore = useOnboardingStore()
 const authStore = useAuthStore()
 
-// État local pour les attentes sélectionnées
-const selectedExpectations = ref<string[]>([])
+// État local pour les maux sélectionnés
+const selectedMaux = ref<number[]>([])
+const availableMaux = ref<any[]>([])
+const mauxLoading = ref(false)
 
 // État pour le formulaire d'inscription
 const registerForm = reactive({
@@ -302,13 +320,27 @@ const registerForm = reactive({
 const registerError = ref('')
 const registerSuccess = ref('')
 
-// Basculer une attente
-const toggleExpectation = (expectation: string) => {
-  const index = selectedExpectations.value.indexOf(expectation)
+// Basculer un mal
+const toggleMal = (malId: number) => {
+  const index = selectedMaux.value.indexOf(malId)
   if (index > -1) {
-    selectedExpectations.value.splice(index, 1)
+    selectedMaux.value.splice(index, 1)
   } else {
-    selectedExpectations.value.push(expectation)
+    selectedMaux.value.push(malId)
+  }
+}
+
+// Charger les maux disponibles
+const loadAvailableMaux = async () => {
+  mauxLoading.value = true
+  try {
+    const response = await $fetch('/api/maux/selection')
+    availableMaux.value = response.maux || []
+  } catch (error) {
+    console.error('Erreur chargement maux:', error)
+    availableMaux.value = []
+  } finally {
+    mauxLoading.value = false
   }
 }
 
@@ -331,9 +363,27 @@ const handleRegister = async () => {
   try {
     await authStore.register(registerForm.email, registerForm.password)
     
-    // Sauvegarder les attentes sélectionnées
-    if (selectedExpectations.value.length > 0) {
-      onboardingStore.saveExpectations(selectedExpectations.value)
+    // Attendre un petit délai pour que l'authentification soit effective
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    // Sauvegarder les maux courants sélectionnés
+    if (selectedMaux.value.length > 0) {
+      try {
+        await $fetch('/api/user/maux-courants', {
+          method: 'POST',
+          body: { 
+            mauxIds: selectedMaux.value,
+            action: 'replace'
+          }
+        })
+        console.log('✅ Maux courants sauvegardés:', selectedMaux.value)
+      } catch (error) {
+        console.error('❌ Erreur sauvegarde maux courants:', error)
+        // Stocker temporairement pour tentative ultérieure
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('pending-maux-courants', JSON.stringify(selectedMaux.value))
+        }
+      }
     }
     
     registerSuccess.value = 'Compte créé avec succès ! 🎉'
@@ -374,10 +424,9 @@ const handleSkip = () => {
   onboardingStore.markOnboardingAsSeen()
 }
 
-// Charger les attentes au montage
+// Charger les maux au montage
 onMounted(() => {
-  onboardingStore.loadExpectations()
-  selectedExpectations.value = [...onboardingStore.userExpectations]
+  loadAvailableMaux()
 })
 
 // Navigation au clavier

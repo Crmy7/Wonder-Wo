@@ -278,6 +278,128 @@
         </div>
       </div>
 
+      <!-- Gestion des maux courants -->
+      <div class="bg-blanc p-6 rounded-2xl border border-beige mt-8">
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h3 class="text-lg font-semibold flex items-center gap-2">
+              <span>🎯</span>
+              <span>Mes maux courants</span>
+            </h3>
+            <p class="text-sm text-grey-black/60 mt-1">
+              Définissez vos maux récurrents pour des suggestions personnalisées
+            </p>
+          </div>
+          <button
+            @click="showMauxForm = !showMauxForm"
+            class="primary-btn text-sm"
+          >
+            <span v-if="showMauxForm">Annuler</span>
+            <span v-else>{{ userMauxCourants.length > 0 ? 'Modifier' : 'Définir' }}</span>
+          </button>
+        </div>
+
+        <!-- Maux actuels -->
+        <div v-if="userMauxCourants.length > 0 && !showMauxForm" class="mb-4">
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div
+              v-for="mal in userMauxCourants"
+              :key="mal.id"
+              class="flex items-center gap-2 p-3 bg-primary/5 rounded-xl border border-primary/10"
+            >
+              <span class="text-lg">{{ mal.icon || '🌿' }}</span>
+              <div class="flex-1 min-w-0">
+                <p class="font-medium text-sm truncate">{{ mal.symptom }}</p>
+                <p class="text-xs text-grey-black/60">Priorité {{ mal.priorite }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Message si aucun mal défini -->
+        <div v-if="userMauxCourants.length === 0 && !showMauxForm" class="text-center py-8">
+          <div class="w-16 h-16 bg-beige/40 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl">🎯</span>
+          </div>
+          <p class="text-grey-black/60 mb-4">Aucun mal courant défini</p>
+          <button
+            @click="showMauxForm = true"
+            class="primary-btn"
+          >
+            Définir mes maux courants
+          </button>
+        </div>
+
+        <!-- Formulaire de sélection des maux -->
+        <div v-if="showMauxForm" class="space-y-6">
+          <!-- Chargement -->
+          <div v-if="mauxLoading" class="text-center py-8">
+            <div class="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-3"></div>
+            <p class="text-sm text-grey-black/60">Chargement des maux disponibles...</p>
+          </div>
+
+          <!-- Liste de sélection -->
+          <div v-else>
+            <div class="mb-4">
+              <p class="text-sm font-medium text-grey-black mb-2">
+                Sélectionnez vos maux courants ({{ selectedMauxIds.length }} sélectionné(s))
+              </p>
+              <p class="text-xs text-grey-black/60">
+                Les maux que vous rencontrez régulièrement apparaîtront sur votre page d'accueil
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-2 max-h-80 overflow-y-auto border border-beige rounded-xl p-4">
+              <label
+                v-for="mal in availableMaux"
+                :key="mal.id"
+                class="flex items-center gap-3 p-3 rounded-lg hover:bg-beige/30 cursor-pointer transition-colors"
+                :class="{ 'bg-primary/5 border border-primary/20': selectedMauxIds.includes(mal.id) }"
+              >
+                <input
+                  v-model="selectedMauxIds"
+                  type="checkbox"
+                  :value="mal.id"
+                  class="h-4 w-4 text-primary focus:ring-primary border-beige rounded"
+                />
+                <span class="text-xl">{{ mal.icon }}</span>
+                <div class="flex-1">
+                  <p class="font-medium text-sm">{{ mal.symptom }}</p>
+                  <p class="text-xs text-grey-black/60">{{ mal.category }}</p>
+                </div>
+              </label>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-3 pt-4">
+              <button
+                @click="saveMauxCourants"
+                :disabled="mauxSaving"
+                class="primary-btn flex-1"
+              >
+                <span v-if="mauxSaving">Sauvegarde...</span>
+                <span v-else>Sauvegarder ({{ selectedMauxIds.length }})</span>
+              </button>
+              <button
+                @click="cancelMauxForm"
+                class="secondary-btn"
+              >
+                Annuler
+              </button>
+            </div>
+
+            <!-- Messages -->
+            <div v-if="mauxError" class="p-3 bg-secondary/10 border border-secondary/20 rounded-lg">
+              <p class="text-secondary text-sm font-medium">{{ mauxError }}</p>
+            </div>
+            
+            <div v-if="mauxSuccess" class="p-3 bg-primary/10 border border-primary/20 rounded-lg">
+              <p class="text-primary text-sm font-medium">{{ mauxSuccess }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Prochaines étapes -->
       <div class="bg-primary/5 p-6 rounded-2xl border border-primary/10 mt-8">
         <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -457,6 +579,148 @@ const useProfilActions = () => {
   }
 }
 
+// Composable pour la gestion des maux courants
+const useMauxCourants = () => {
+  const showMauxForm = ref(false)
+  const userMauxCourants = ref<any[]>([])
+  const availableMaux = ref<any[]>([])
+  const selectedMauxIds = ref<number[]>([])
+  const mauxLoading = ref(false)
+  const mauxSaving = ref(false)
+  const mauxError = ref('')
+  const mauxSuccess = ref('')
+
+  // Charger les maux courants de l'utilisateur
+  const loadUserMauxCourants = async () => {
+    try {
+      const response = await $fetch('/api/user/maux-courants')
+      userMauxCourants.value = response.mauxCourants.map((mal: any) => ({
+        ...mal,
+        icon: getIconForSymptom(mal.symptom),
+        category: getCategoryForSymptom(mal.symptom)
+      }))
+    } catch (error) {
+      console.error('Erreur chargement maux courants:', error)
+      userMauxCourants.value = []
+    }
+  }
+
+  // Charger les maux disponibles pour sélection
+  const loadAvailableMaux = async () => {
+    mauxLoading.value = true
+    try {
+      const response = await $fetch('/api/maux/selection')
+      availableMaux.value = response.maux || []
+    } catch (error) {
+      console.error('Erreur chargement maux disponibles:', error)
+      availableMaux.value = []
+    } finally {
+      mauxLoading.value = false
+    }
+  }
+
+  // Fonctions utilitaires pour les icônes et catégories
+  const getIconForSymptom = (symptom: string): string => {
+    const symptomLower = symptom.toLowerCase()
+    
+    if (symptomLower.includes('stress')) return '😰'
+    if (symptomLower.includes('sommeil') || symptomLower.includes('insomnie')) return '😴'
+    if (symptomLower.includes('anxiété') || symptomLower.includes('angoisse')) return '😟'
+    if (symptomLower.includes('fatigue') || symptomLower.includes('épuisement')) return '😪'
+    if (symptomLower.includes('mal de tête') || symptomLower.includes('migraine')) return '🤕'
+    if (symptomLower.includes('digestion') || symptomLower.includes('crampes') || symptomLower.includes('ballonnements')) return '🤢'
+    if (symptomLower.includes('rhume') || symptomLower.includes('toux') || symptomLower.includes('grippe')) return '🤧'
+    if (symptomLower.includes('douleur') || symptomLower.includes('mal')) return '💊'
+    if (symptomLower.includes('nausées') || symptomLower.includes('vomissement')) return '🤮'
+    if (symptomLower.includes('fièvre')) return '🤒'
+    
+    return '🌿'
+  }
+
+  const getCategoryForSymptom = (symptom: string): string => {
+    const symptomLower = symptom.toLowerCase()
+    
+    if (symptomLower.includes('stress') || symptomLower.includes('anxiété')) return 'Mental'
+    if (symptomLower.includes('sommeil') || symptomLower.includes('insomnie')) return 'Sommeil'
+    if (symptomLower.includes('fatigue') || symptomLower.includes('épuisement')) return 'Énergie'
+    if (symptomLower.includes('digestion') || symptomLower.includes('crampes')) return 'Digestif'
+    if (symptomLower.includes('rhume') || symptomLower.includes('toux')) return 'Respiratoire'
+    if (symptomLower.includes('douleur') || symptomLower.includes('mal de tête')) return 'Douleur'
+    
+    return 'Général'
+  }
+
+  // Sauvegarder les maux sélectionnés
+  const saveMauxCourants = async () => {
+    mauxSaving.value = true
+    mauxError.value = ''
+    mauxSuccess.value = ''
+    
+    try {
+      await $fetch('/api/user/maux-courants', {
+        method: 'POST',
+        body: { 
+          mauxIds: selectedMauxIds.value,
+          action: 'replace'
+        }
+      })
+      
+      mauxSuccess.value = `${selectedMauxIds.value.length} mal(aux) courant(s) sauvegardé(s) !`
+      
+      // Recharger les maux de l'utilisateur
+      await loadUserMauxCourants()
+      
+      // Fermer le formulaire après 2 secondes
+      setTimeout(() => {
+        showMauxForm.value = false
+        mauxSuccess.value = ''
+      }, 2000)
+      
+    } catch (error: any) {
+      console.error('Erreur sauvegarde maux courants:', error)
+      mauxError.value = error.data?.message || 'Erreur lors de la sauvegarde'
+    } finally {
+      mauxSaving.value = false
+    }
+  }
+
+  // Annuler le formulaire
+  const cancelMauxForm = () => {
+    showMauxForm.value = false
+    selectedMauxIds.value = []
+    mauxError.value = ''
+    mauxSuccess.value = ''
+  }
+
+  // Ouvrir le formulaire avec les maux actuels pré-sélectionnés
+  const openMauxForm = async () => {
+    showMauxForm.value = true
+    selectedMauxIds.value = userMauxCourants.value.map(mal => mal.id)
+    await loadAvailableMaux()
+  }
+
+  // Watcher pour charger les maux automatiquement quand on ouvre le formulaire
+  watch(showMauxForm, async (newValue) => {
+    if (newValue) {
+      await openMauxForm()
+    }
+  })
+
+  return {
+    showMauxForm,
+    userMauxCourants,
+    availableMaux,
+    selectedMauxIds,
+    mauxLoading,
+    mauxSaving,
+    mauxError,
+    mauxSuccess,
+    loadUserMauxCourants,
+    saveMauxCourants,
+    cancelMauxForm
+  }
+}
+
 // Utilisation des composables
 const { 
   showCreateForm, 
@@ -477,6 +741,20 @@ const {
   logout: handleLogout 
 } = useProfilActions()
 
+const {
+  showMauxForm,
+  userMauxCourants,
+  availableMaux,
+  selectedMauxIds,
+  mauxLoading,
+  mauxSaving,
+  mauxError,
+  mauxSuccess,
+  loadUserMauxCourants,
+  saveMauxCourants,
+  cancelMauxForm
+} = useMauxCourants()
+
 // Initialisation
 onMounted(async () => {
   // Vérifier l'authentification
@@ -486,8 +764,9 @@ onMounted(async () => {
     return
   }
   
-  // Charger les profils
+  // Charger les profils et les maux courants
   await initProfils()
+  await loadUserMauxCourants()
 })
 </script>
 

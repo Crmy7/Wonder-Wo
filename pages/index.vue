@@ -449,8 +449,29 @@
 
         <!-- Raccourcis Maux Courants -->
         <div class="mb-6">
-          <h2 class="font-effloresce text-primary text-lg mb-4">🎯 Maux courants</h2>
-          <div class="grid grid-cols-2 gap-3">
+          <h2 class="font-effloresce text-primary text-lg mb-4">
+            {{ isLoggedIn ? '🎯 Mes maux courants' : '🎯 Maux courants' }}
+          </h2>
+          <!-- Maux personnalisés pour utilisateurs connectés -->
+          <div v-if="isLoggedIn && userMauxCourants.length > 0" class="grid grid-cols-2 gap-3">
+            <button 
+              v-for="mal in userMauxCourants.slice(0, 6)" 
+              :key="mal.id"
+              @click="searchMal(mal.symptom)" 
+              class="bg-blanc p-4 rounded-xl border border-beige hover:border-primary/40 transition-colors text-left"
+            >
+              <div class="text-2xl mb-2">{{ mal.icon || '🌿' }}</div>
+              <h3 class="font-medium text-grey-black text-sm">{{ mal.symptom }}</h3>
+              <p class="text-xs text-grey-black/60">{{ mal.category || 'Remède naturel' }}</p>
+              <div class="flex items-center gap-1 mt-1">
+                <div class="w-1 h-1 bg-primary rounded-full"></div>
+                <span class="text-xs text-primary">Priorité {{ mal.priorite }}</span>
+              </div>
+            </button>
+          </div>
+          
+          <!-- Maux par défaut pour tous les utilisateurs (si pas de maux personnalisés) -->
+          <div v-else class="grid grid-cols-2 gap-3">
             <button @click="searchMal('mal de tête')" class="bg-blanc p-4 rounded-xl border border-beige hover:border-primary/40 transition-colors text-left">
               <div class="text-2xl mb-2">🤕</div>
               <h3 class="font-medium text-grey-black text-sm">Mal de tête</h3>
@@ -485,6 +506,16 @@
               <div class="text-2xl mb-2">😪</div>
               <h3 class="font-medium text-grey-black text-sm">Fatigue</h3>
               <p class="text-xs text-grey-black/60">Boost énergie</p>
+            </button>
+          </div>
+          
+          <!-- Bouton pour gérer les maux courants -->
+          <div v-if="isLoggedIn" class="mt-4 text-center">
+            <button 
+              @click="showManageMaux" 
+              class="text-xs text-primary hover:text-secondary transition-colors underline"
+            >
+              {{ userMauxCourants.length > 0 ? 'Modifier mes maux courants' : 'Définir mes maux courants' }}
             </button>
           </div>
         </div>
@@ -611,6 +642,95 @@ const onboardingStore = useOnboardingStore()
 
 // État réactif
 const showWelcomePage = ref(false)
+const userMauxCourants = ref<any[]>([])
+
+// Charger les maux courants de l'utilisateur
+const loadUserMauxCourants = async () => {
+  if (!isLoggedIn) {
+    userMauxCourants.value = []
+    return
+  }
+  
+  try {
+    // Vérifier s'il y a des maux en attente à traiter
+    await processPendingMaux()
+    
+    const response = await $fetch('/api/user/maux-courants')
+    userMauxCourants.value = response.mauxCourants.map((mal: any) => ({
+      ...mal,
+      icon: getIconForSymptom(mal.symptom),
+      category: getCategoryForSymptom(mal.symptom)
+    }))
+  } catch (error) {
+    console.error('Erreur chargement maux courants:', error)
+    userMauxCourants.value = []
+  }
+}
+
+// Traiter les maux en attente depuis localStorage
+const processPendingMaux = async () => {
+  if (typeof window === 'undefined') return
+  
+  const pendingMaux = localStorage.getItem('pending-maux-courants')
+  if (!pendingMaux) return
+  
+  try {
+    const mauxIds = JSON.parse(pendingMaux)
+    if (Array.isArray(mauxIds) && mauxIds.length > 0) {
+      console.log('🔄 Traitement des maux en attente:', mauxIds)
+      
+      await $fetch('/api/user/maux-courants', {
+        method: 'POST',
+        body: { 
+          mauxIds,
+          action: 'replace'
+        }
+      })
+      
+      console.log('✅ Maux en attente sauvegardés')
+      localStorage.removeItem('pending-maux-courants')
+    }
+  } catch (error) {
+    console.error('❌ Erreur traitement maux en attente:', error)
+  }
+}
+
+// Fonctions utilitaires pour les icônes et catégories
+function getIconForSymptom(symptom: string): string {
+  const symptomLower = symptom.toLowerCase()
+  
+  if (symptomLower.includes('stress')) return '😰'
+  if (symptomLower.includes('sommeil') || symptomLower.includes('insomnie')) return '😴'
+  if (symptomLower.includes('anxiété') || symptomLower.includes('angoisse')) return '😟'
+  if (symptomLower.includes('fatigue') || symptomLower.includes('épuisement')) return '😪'
+  if (symptomLower.includes('mal de tête') || symptomLower.includes('migraine')) return '🤕'
+  if (symptomLower.includes('digestion') || symptomLower.includes('crampes') || symptomLower.includes('ballonnements')) return '🤢'
+  if (symptomLower.includes('rhume') || symptomLower.includes('toux') || symptomLower.includes('grippe')) return '🤧'
+  if (symptomLower.includes('douleur') || symptomLower.includes('mal')) return '💊'
+  if (symptomLower.includes('nausées') || symptomLower.includes('vomissement')) return '🤮'
+  if (symptomLower.includes('fièvre')) return '🤒'
+  
+  return '🌿'
+}
+
+function getCategoryForSymptom(symptom: string): string {
+  const symptomLower = symptom.toLowerCase()
+  
+  if (symptomLower.includes('stress') || symptomLower.includes('anxiété')) return 'Mental'
+  if (symptomLower.includes('sommeil') || symptomLower.includes('insomnie')) return 'Sommeil'
+  if (symptomLower.includes('fatigue') || symptomLower.includes('épuisement')) return 'Énergie'
+  if (symptomLower.includes('digestion') || symptomLower.includes('crampes')) return 'Digestif'
+  if (symptomLower.includes('rhume') || symptomLower.includes('toux')) return 'Respiratoire'
+  if (symptomLower.includes('douleur') || symptomLower.includes('mal de tête')) return 'Douleur'
+  
+  return 'Général'
+}
+
+// Gérer les maux courants
+const showManageMaux = () => {
+  // Rediriger vers la page profil pour gérer les maux courants
+  navigateTo('/profil')
+}
 
 // Configuration de la page
 definePageMeta({
@@ -628,6 +748,20 @@ const startGuidedOnboarding = () => {
 onMounted(() => {
   // Plus de vérification automatique de l'onboarding
   // Il ne s'affichera que sur choix de l'utilisateur
+  
+  // Charger les maux courants si l'utilisateur est connecté
+  if (isLoggedIn) {
+    loadUserMauxCourants()
+  }
+})
+
+// Watcher pour recharger les maux quand l'utilisateur se connecte
+watch(() => isLoggedIn, (newValue) => {
+  if (newValue) {
+    loadUserMauxCourants()
+  } else {
+    userMauxCourants.value = []
+  }
 })
 
 // Fonction pour afficher l'onboarding manuellement en mode révision
