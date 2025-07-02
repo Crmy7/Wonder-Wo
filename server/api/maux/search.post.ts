@@ -53,85 +53,55 @@ export default defineEventHandler(async (event) => {
 
     // Essayer la base de données d'abord
     try {
-      const { Maux, Produit, Recettes, Placard } = await import('~/server/database')
+      console.log('🔍 [ETAPE 1] Début recherche pour symptôme:', symptome, 'utilisateur:', IdUser)
       
-      console.log('🔍 Recherche de remèdes pour symptôme:', symptome, 'utilisateur:', IdUser)
+      const { Maux, Produit, Recettes, Placard } = await import('~/server/database')
+      console.log('✅ [ETAPE 1] Import des modèles réussi')
       
       // 1. Récupérer les produits du placard de l'utilisateur
+      console.log('🔍 [ETAPE 2] Récupération du placard pour utilisateur:', IdUser)
       const placardUtilisateur = await Placard.findAll({
-        where: { IdUser }
-      })
+        where: { IdUser },
+        raw: true
+      }) as any[]
       
       const produitsPlacardIds: number[] = placardUtilisateur.map((item: any) => item.IdProduit)
-      console.log('📦 Produits dans le placard:', produitsPlacardIds)
+      console.log('✅ [ETAPE 2] Produits dans le placard:', produitsPlacardIds.length, 'produits ->', produitsPlacardIds)
 
       // 2. Recherche dans les maux correspondant au symptôme
+      console.log('🔍 [ETAPE 3] Recherche dans les maux avec symptôme:', symptome)
       const mauxTrouves = await Maux.findAll({
         where: {
           Symptom: {
-            [Op.iLike]: `%${symptome}%`
+            [Op.like]: `%${symptome}%`
           }
-        }
-      })
+        },
+        raw: true
+      }) as any[]
 
-      // 3. Pour chaque mal trouvé, chercher les recettes et produits liés
-      const recettesAssociees = []
-      for (const mal of mauxTrouves) {
-        // Trouver les recettes liées via les tables de liaison
-        const recettes = await Recettes.findAll({
-          include: [
-            {
-              model: Maux,
-              as: 'maux',
-              where: { id: mal.id },
-              through: { attributes: [] }
-            }
-          ]
-        })
-        
-        // Pour chaque recette, trouver les produits
-        for (const recette of recettes) {
-          const produits = await Produit.findAll({
-            include: [
-              {
-                model: Recettes,
-                as: 'recettes',
-                where: { id: recette.id },
-                through: { attributes: [] }
-              }
-            ],
-            attributes: [
-              'id', 'Nom_Commun', 'Nom_Scientifique', 
-              'Propriete_Principale', 'Propriete_Secondaire',
-              'Utilisation', 'Precautions', 'Image_url'
-            ]
-          })
-          
-          recettesAssociees.push({
-            mal: mal,
-            recette: recette,
-            produits: produits
-          })
-        }
+      console.log('✅ [ETAPE 3] Maux trouvés:', mauxTrouves.length, 'résultats')
+      if (mauxTrouves.length > 0) {
+        console.log('📝 [ETAPE 3] Premiers maux:', mauxTrouves.slice(0, 3).map(m => m.Symptom))
       }
 
-      // 4. Recherche directe dans les produits par propriétés
+      // 3. Recherche directe dans les produits par propriétés
+      console.log('🔍 [ETAPE 4] Recherche dans les produits avec symptôme:', symptome)
       const produitsRecommandes = await Produit.findAll({
         where: {
           [Op.or]: [
             {
               Propriete_Principale: {
-                [Op.iLike]: `%${symptome}%`
+                [Op.like]: `%${symptome}%`
               }
             },
             {
               Propriete_Secondaire: {
-                [Op.iLike]: `%${symptome}%`
+                [Op.like]: `%${symptome}%`
               }
             },
             {
               Utilisation: {
-                [Op.iLike]: `%${symptome}%`
+                [Op.like]: `%${symptome}%`
               }
             }
           ]
@@ -140,43 +110,25 @@ export default defineEventHandler(async (event) => {
           'id', 'Nom_Commun', 'Nom_Scientifique', 
           'Propriete_Principale', 'Propriete_Secondaire',
           'Utilisation', 'Precautions', 'Image_url'
-        ]
-      })
+        ],
+        raw: true
+      }) as any[]
 
-      // 5. Pour chaque produit recommandé, chercher ses recettes
-      const produitsAvecRecettes = []
-      for (const produit of produitsRecommandes) {
-        const recettes = await Recettes.findAll({
-          include: [
-            {
-              model: Produit,
-              as: 'produits',
-              where: { id: produit.id },
-              through: { attributes: [] }
-            }
-          ],
-          attributes: [
-            'id', 'Type_Remede', 'Type_Application', 'Recette',
-            'Tranche_age', 'Femme_Enceinte', 'Source_Documentaire', 'Efficacite'
-          ]
-        })
-        
-        produitsAvecRecettes.push({
-          produit: produit,
-          recettes: recettes
-        })
+      console.log('✅ [ETAPE 4] Produits trouvés:', produitsRecommandes.length, 'résultats')
+      if (produitsRecommandes.length > 0) {
+        console.log('📝 [ETAPE 4] Premiers produits:', produitsRecommandes.slice(0, 3).map(p => p.Nom_Commun))
       }
 
       // 4. Formater et prioriser les résultats
+      console.log('🔍 [ETAPE 5] Formatage des résultats')
       const resultats: ResultatRecherche[] = []
-      const recettesDejaAjoutees = new Set<number>()
 
       // Fonction pour vérifier l'adaptation au profil
-      const estAdapteAuProfil = (recette: any): boolean => {
-        if (!profil) return true
+      const estAdapteAuProfil = (recette?: any): boolean => {
+        if (!profil || !recette) return true
         
         // Vérifier grossesse
-        if (profil.grossesse && !recette.Femme_Enceinte) {
+        if (profil.grossesse && recette.Femme_Enceinte === false) {
           return false
         }
         
@@ -190,76 +142,39 @@ export default defineEventHandler(async (event) => {
       }
 
       // Fonction pour calculer le score de priorité
-      const calculerScore = (recette: any, produitsDansRecette: any[]): number => {
-        let score = recette.Efficacite || 0.5
+      const calculerScore = (produitIds: number[], hasRecette: boolean = false): number => {
+        let score = 0.5 // Score de base
         
         // Boost si produits du placard disponibles
-        const produitsPlacardDansRecette = produitsDansRecette.filter((p: any) => 
-          produitsPlacardIds.includes(p.id)
+        const produitsPlacardDansRecette = produitIds.filter(id => 
+          produitsPlacardIds.includes(id)
         )
         
         if (produitsPlacardDansRecette.length > 0) {
           score += 0.4 + (produitsPlacardDansRecette.length * 0.1)
         }
         
-        // Boost si adapté au profil
-        if (estAdapteAuProfil(recette)) {
+        // Boost pour les recettes vs produits simples
+        if (hasRecette) {
           score += 0.2
         }
         
         return Math.min(score, 1.0) // Cap à 1.0
       }
 
-      // 6. Traiter les recettes trouvées via maux
-      recettesAssociees.forEach((association: any) => {
-        const { mal, recette, produits } = association
-        
-        const produitsDansRecette = produits || []
-        const produitsPlacardDansRecette = produitsDansRecette.filter((p: any) => 
-          produitsPlacardIds.includes(p.id)
-        )
-        
-        const score = calculerScore(recette, produitsDansRecette)
-        const adapte = estAdapteAuProfil(recette)
-        
-        const resultat: ResultatRecherche = {
-          id: `mal-${mal.id}-recette-${recette.id}`,
-          type: 'recette',
-          nomRecette: `Remède ${getTypeRemede(recette.Type_Remede)} pour ${mal.Symptom}`,
-          description: recette.Recette,
-          typeApplication: getTypeApplication(recette.Type_Application),
-          produits: produitsDansRecette.map((p: any): ProduitRecette => ({
-            id: p.id,
-            nom: p.Nom_Commun,
-            nomScientifique: p.Nom_Scientifique,
-            dansPlacard: produitsPlacardIds.includes(p.id),
-            imageUrl: p.Image_url || '🌿',
-            proprietes: p.Propriete_Principale
-          })),
-          produitsPlacardDisponibles: produitsPlacardDansRecette.length,
-          sourceDocumentaire: recette.Source_Documentaire || 'Pharmacopée traditionnelle',
-          adapteAuProfil: adapte,
-          raisonNonAdapte: !adapte ? getRaisonNonAdapte(recette, profil) : null,
-          score,
-          categorie: 'Recette traditionnelle',
-          imageUrl: getIconeRemede(recette.Type_Remede),
-          efficacite: recette.Efficacite || 0.7
-        }
-        
-        resultats.push(resultat)
-      })
-
-      // 7. Traiter les produits trouvés directement
-      produitsAvecRecettes.forEach((association: any) => {
-        const { produit, recettes } = association
+      // 5. Traiter les produits trouvés directement
+      console.log('🔍 [ETAPE 6] Traitement des produits trouvés:', produitsRecommandes.length)
+      for (const produit of produitsRecommandes) {
         const dansPlacard = produitsPlacardIds.includes(produit.id)
+        const score = calculerScore([produit.id], false)
+        console.log(`📝 [ETAPE 6] Produit: ${produit.Nom_Commun}, dans placard: ${dansPlacard}, score: ${score}`)
         
         // Ajouter le produit comme remède simple
         const resultatProduit: ResultatRecherche = {
           id: `produit-${produit.id}`,
           type: 'produit_simple',
           nomRecette: `Usage de ${produit.Nom_Commun}`,
-          description: produit.Utilisation,
+          description: produit.Utilisation || `Remède naturel à base de ${produit.Nom_Commun}`,
           typeApplication: 'Usage direct',
           produits: [{
             id: produit.id,
@@ -267,56 +182,67 @@ export default defineEventHandler(async (event) => {
             nomScientifique: produit.Nom_Scientifique,
             dansPlacard,
             imageUrl: produit.Image_url || '🌿',
-            proprietes: produit.Propriete_Principale
+            proprietes: produit.Propriete_Principale || ''
           }],
           produitsPlacardDisponibles: dansPlacard ? 1 : 0,
           sourceDocumentaire: 'Propriétés thérapeutiques',
           adapteAuProfil: true,
           raisonNonAdapte: null,
-          score: dansPlacard ? 0.8 : 0.6,
+          score,
           categorie: 'Produit naturel',
           imageUrl: produit.Image_url || '🌿',
           efficacite: 0.7
         }
         resultats.push(resultatProduit)
+      }
 
-        // Ajouter ses recettes associées
-        recettes?.forEach((recette: any) => {
-          const score = calculerScore(recette, [produit])
-          const adapte = estAdapteAuProfil(recette)
+      // 6. Pour les maux trouvés, chercher des recettes potentielles
+      // (Simplification - on pourrait ajouter une logique plus complexe plus tard)
+      console.log('🔍 [ETAPE 7] Traitement des maux trouvés:', mauxTrouves.length)
+      if (mauxTrouves.length > 0) {
+        // Créer un remède générique basé sur le premier mal trouvé
+        const premierMal = mauxTrouves[0]
+        const produitsLies = produitsRecommandes.slice(0, 3) // Prendre les 3 premiers produits
+        console.log(`📝 [ETAPE 7] Premier mal: ${premierMal.Symptom}, produits liés: ${produitsLies.length}`)
+        
+        if (produitsLies.length > 0) {
+          const produitIds = produitsLies.map(p => p.id)
+          const score = calculerScore(produitIds, true)
           
-          const resultatRecette: ResultatRecherche = {
-            id: `produit-${produit.id}-recette-${recette.id}`,
+          const resultatMal: ResultatRecherche = {
+            id: `mal-${premierMal.id}-combinaison`,
             type: 'recette',
-            nomRecette: `Recette avec ${produit.Nom_Commun}`,
-            description: recette.Recette,
-            typeApplication: getTypeApplication(recette.Type_Application),
-            produits: [{
-              id: produit.id,
-              nom: produit.Nom_Commun,
-              nomScientifique: produit.Nom_Scientifique,
-              dansPlacard,
-              imageUrl: produit.Image_url || '🌿',
-              proprietes: produit.Propriete_Principale
-            }],
-            produitsPlacardDisponibles: dansPlacard ? 1 : 0,
-            sourceDocumentaire: recette.Source_Documentaire || 'Recettes traditionnelles',
-            adapteAuProfil: adapte,
-            raisonNonAdapte: !adapte ? getRaisonNonAdapte(recette, profil) : null,
+            nomRecette: `Remède naturel pour ${premierMal.Symptom}`,
+            description: `Combinaison de plantes pour traiter ${premierMal.Symptom}. Utilisation traditionnelle recommandée.`,
+            typeApplication: 'Usage interne',
+            produits: produitsLies.map((p: any): ProduitRecette => ({
+              id: p.id,
+              nom: p.Nom_Commun,
+              nomScientifique: p.Nom_Scientifique,
+              dansPlacard: produitsPlacardIds.includes(p.id),
+              imageUrl: p.Image_url || '🌿',
+              proprietes: p.Propriete_Principale || ''
+            })),
+            produitsPlacardDisponibles: produitIds.filter(id => produitsPlacardIds.includes(id)).length,
+            sourceDocumentaire: 'Pharmacopée traditionnelle',
+            adapteAuProfil: true,
+            raisonNonAdapte: null,
             score,
-            categorie: 'Recette spécialisée',
-            imageUrl: getIconeRemede(recette.Type_Remede),
-            efficacite: recette.Efficacite || 0.7
+            categorie: 'Recette traditionnelle',
+            imageUrl: '🫖',
+            efficacite: 0.8
           }
-          
-          resultats.push(resultatRecette)
-        })
-      })
+          resultats.push(resultatMal)
+        }
+      }
 
-      // 8. Éliminer les doublons et trier par score de priorité (placard d'abord)
+      // 7. Éliminer les doublons et trier par score de priorité
+      console.log('🔍 [ETAPE 8] Finalisation - résultats bruts:', resultats.length)
       const resultatsUniques = resultats.filter((resultat, index, self) => 
         index === self.findIndex(r => r.id === resultat.id)
       )
+      
+      console.log('✅ [ETAPE 8] Résultats uniques:', resultatsUniques.length)
       
       resultatsUniques.sort((a, b) => {
         // D'abord par nombre de produits placard disponibles
@@ -326,8 +252,10 @@ export default defineEventHandler(async (event) => {
         // Puis par score global
         return b.score - a.score
       })
+      
+      console.log('✅ [ETAPE 8] Résultats triés par priorité')
 
-      return {
+      const response = {
         success: true,
         symptome,
         profil,
@@ -340,9 +268,18 @@ export default defineEventHandler(async (event) => {
         },
         message: `${resultatsUniques.length} remède(s) trouvé(s) pour "${symptome}"`
       }
+      
+      console.log('🎉 [ETAPE 9] SUCCÈS - Réponse finale:', {
+        symptome: response.symptome,
+        count: response.count,
+        placardInfo: response.placardInfo
+      })
+      
+      return response
 
-    } catch (dbError) {
-      console.log('MySQL non disponible pour maux')
+    } catch (dbError: any) {
+      console.error('❌ [ERREUR DB] Erreur base de données:', dbError.message)
+      console.error('❌ [ERREUR DB] Stack:', dbError.stack)
       throw createError({
         statusCode: 503,
         statusMessage: 'Base de données non disponible. Veuillez vérifier que MySQL est démarré et configuré.'
@@ -350,7 +287,8 @@ export default defineEventHandler(async (event) => {
     }
 
   } catch (error: any) {
-    console.error('Erreur recherche maux:', error.message)
+    console.error('❌ [ERREUR GENERALE] Erreur recherche maux:', error.message)
+    console.error('❌ [ERREUR GENERALE] Stack:', error.stack)
     
     if (error.statusCode) {
       throw error

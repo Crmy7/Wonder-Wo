@@ -15,15 +15,22 @@ export const useMaux = () => {
       throw new Error('Symptôme requis')
     }
 
+    console.log('🔍 [COMPOSABLE] Début recherche pour:', symptome, 'avec profil:', profil)
     loading.value = true
     error.value = ''
     
     try {
-      console.log('🔍 Recherche de remèdes pour:', symptome)
+      console.log('🔍 [COMPOSABLE] Appel API /api/maux/search')
       
       const data = await $fetch<RechercheResponse>('/api/maux/search', {
         method: 'POST',
         body: { symptome, profil }
+      })
+      
+      console.log('✅ [COMPOSABLE] Réponse API reçue:', {
+        success: data.success,
+        count: data.count,
+        resultatsLength: data.resultats?.length
       })
       
       resultats.value = data.resultats || []
@@ -36,11 +43,18 @@ export const useMaux = () => {
       searched.value = true
       lastSearchTerm.value = symptome
       
-      console.log('✅ Remèdes trouvés:', resultats.value.length)
+      console.log('✅ [COMPOSABLE] Traitement terminé - remèdes trouvés:', resultats.value.length)
+      console.log('📦 [COMPOSABLE] PlacardInfo:', placardInfo.value)
       return data
       
     } catch (err: any) {
-      console.error('❌ Erreur recherche remèdes:', err)
+      console.error('❌ [COMPOSABLE] Erreur recherche remèdes:', err)
+      console.error('❌ [COMPOSABLE] Details:', {
+        statusCode: err.statusCode,
+        statusMessage: err.statusMessage,
+        message: err.message,
+        data: err.data
+      })
       error.value = err.statusMessage || err.message || 'Erreur lors de la recherche'
       throw err
       

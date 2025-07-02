@@ -389,15 +389,23 @@ const remedesFiltres = computed(() => {
 const handleSearch = async () => {
   if (!searchTerm.value.trim()) return
   
+  console.log('🔍 [PAGE] Début recherche depuis la page Maux:', searchTerm.value)
+  console.log('👤 [PAGE] Profil actuel:', currentProfil.value)
+  
   try {
+    console.log('📡 [PAGE] Appel rechercherAvecProfilActuel')
     await rechercherAvecProfilActuel(searchTerm.value)
     filtreActuel.value = 'tous' // Reset du filtre
+    console.log('✅ [PAGE] Recherche terminée avec succès')
   } catch (err: any) {
-    console.error('Erreur recherche:', err)
+    console.error('❌ [PAGE] Erreur recherche:', err)
+    console.error('❌ [PAGE] Détails erreur:', {
+      statusCode: err.statusCode,
+      statusMessage: err.statusMessage,
+      message: err.message
+    })
     // Afficher un message d'erreur plus spécifique selon le type d'erreur
-    if (err.statusCode === 503) {
-      error.value = 'Base de données non disponible. Veuillez vérifier que MySQL est configuré et que la base contient des données.'
-    }
+    // L'erreur sera gérée par le composable useMaux
   }
 }
 
