@@ -9,7 +9,7 @@
         <!-- Logo -->
         <div class="flex items-center">
           <NuxtLink to="/" class="text-2xl font-bold text-primary">
-            Wonder Wo
+            <img src="/img/Wonder_Wo_logo_Horizontal.svg" alt="Wonder World" class=" w-44 h-36" />
           </NuxtLink>
         </div>
 
