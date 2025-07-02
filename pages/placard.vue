@@ -282,31 +282,51 @@ definePageMeta({
 
 // Composables
 const { produits, loadProduits, getProduitsProps } = useProduits()
+const { 
+  items: placardItems, 
+  loading, 
+  error: placardError, 
+  loadPlacard, 
+  addToPlacard, 
+  removeFromPlacardById, 
+  clearPlacard,
+  clearError: clearPlacardError,
+  isInPlacard
+} = usePlacard()
 
-// État réactif
-const placardItems = ref([])
+// Types
+interface Produit {
+  id: number
+  nom: string
+  nomScientifique: string
+  famille: string
+  partie: string
+  composition: string
+  formeGalenique: number
+  proprietesPrincipales: string
+  proprietesSecondaires: string
+  utilisation: string
+  precautions: string
+  source: string
+  imageUrl: string
+  slug: string
+}
+
+// État réactif local
 const searchQuery = ref('')
-const searchResults = ref([])
-const selectedProduit = ref(null)
+const searchResults = ref<Produit[]>([])
+const selectedProduit = ref<Produit | null>(null)
 const showAddForm = ref(false)
-const loading = ref(false)
 const loadingProduits = ref(false)
-const error = ref('')
 const success = ref('')
 
-// Charger le placard
-const loadPlacard = async () => {
-  loading.value = true
-  try {
-    const data = await $fetch('/api/placard/list')
-    placardItems.value = data.items || []
-  } catch (err) {
-    error.value = 'Erreur lors du chargement du placard'
-    console.error('Erreur placard:', err)
-  } finally {
-    loading.value = false
+// Computed pour gérer les erreurs
+const error = computed({
+  get: () => placardError.value,
+  set: (value) => {
+    // Ne rien faire, on utilise clearError
   }
-}
+})
 
 // Rechercher des produits
 const searchProduits = async () => {
@@ -338,71 +358,52 @@ const searchProduits = async () => {
 }
 
 // Sélectionner un produit à ajouter
-const selectProduitToAdd = (produit) => {
+const selectProduitToAdd = (produit: Produit) => {
   selectedProduit.value = produit
 }
 
 // Vérifier si un produit est déjà dans le placard
-const isAlreadyInPlacard = (produitId) => {
+const isAlreadyInPlacard = (produitId: number | undefined) => {
   if (!produitId) return false
-  return placardItems.value.some(item => item.IdProduit === produitId)
+  return isInPlacard(produitId)
 }
 
 // Ajouter un produit au placard
 const handleAddToPlacard = async () => {
   if (!selectedProduit.value) return
   
-  loading.value = true
-  error.value = ''
   success.value = ''
   
   try {
-    const result = await $fetch('/api/placard/add', {
-      method: 'POST',
-      body: { IdProduit: selectedProduit.value.id }
-    })
-    
-    success.value = result.message || 'Produit ajouté avec succès !'
-    await loadPlacard() // Recharger le placard
+    await addToPlacard(selectedProduit.value.id)
+    success.value = 'Produit ajouté avec succès !'
     resetAddForm()
     
     // Auto-clear du message
     setTimeout(() => success.value = '', 3000)
     
   } catch (err) {
-    error.value = err.statusMessage || 'Erreur lors de l\'ajout'
     console.error('Erreur ajout:', err)
-  } finally {
-    loading.value = false
   }
 }
 
 // Retirer un produit du placard
-const handleRemoveFromPlacard = async (itemId, produitName) => {
+const handleRemoveFromPlacard = async (itemId: number, produitName: string) => {
   if (!confirm(`Êtes-vous sûr de vouloir retirer "${produitName}" de votre placard ?`)) {
     return
   }
   
-  loading.value = true
-  error.value = ''
   success.value = ''
   
   try {
-    const result = await $fetch(`/api/placard/${itemId}`, {
-      method: 'DELETE'
-    })
-    
-    success.value = result.message || 'Produit retiré avec succès !'
-    await loadPlacard() // Recharger le placard
+    await removeFromPlacardById(itemId)
+    success.value = 'Produit retiré avec succès !'
     
     // Auto-clear du message
     setTimeout(() => success.value = '', 3000)
     
   } catch (err) {
-    error.value = err.statusMessage || 'Erreur lors de la suppression'
     console.error('Erreur suppression:', err)
-  } finally {
-    loading.value = false
   }
 }
 
@@ -412,26 +413,17 @@ const handleClearPlacard = async () => {
     return
   }
   
-  loading.value = true
-  error.value = ''
   success.value = ''
   
   try {
-    const result = await $fetch('/api/placard/clear', {
-      method: 'DELETE'
-    })
-    
-    success.value = result.message || 'Placard vidé avec succès !'
-    await loadPlacard() // Recharger le placard
+    await clearPlacard()
+    success.value = 'Placard vidé avec succès !'
     
     // Auto-clear du message
     setTimeout(() => success.value = '', 3000)
     
   } catch (err) {
-    error.value = err.statusMessage || 'Erreur lors du vidage'
     console.error('Erreur vidage:', err)
-  } finally {
-    loading.value = false
   }
 }
 
@@ -444,11 +436,11 @@ const resetAddForm = () => {
 }
 
 // Effacer les messages
-const clearError = () => error.value = ''
+const clearError = () => clearPlacardError()
 const clearSuccess = () => success.value = ''
 
 // Fonction utilitaire pour formater les dates
-const formatDate = (dateString) => {
+const formatDate = (dateString: string) => {
   if (!dateString) return 'Date inconnue'
   return new Date(dateString).toLocaleDateString('fr-FR', {
     day: 'numeric',
@@ -458,7 +450,7 @@ const formatDate = (dateString) => {
 }
 
 // Fonction utilitaire pour obtenir une description courte
-const getShortDescription = (produit) => {
+const getShortDescription = (produit: any) => {
   if (!produit) return ''
   const description = `${produit.proprietesPrincipales}. ${produit.utilisation.split('.')[0]}.`
   return description.length > 120 ? description.substring(0, 120) + '...' : description

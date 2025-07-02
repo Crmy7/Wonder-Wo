@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
         where: { IdUser },
         include: [{
           model: Produit,
-          as: 'produits',
+          as: 'produitDetails',
           attributes: [
             'id', 'Nom_Commun', 'Nom_Scientifique', 'Famille_Botanique',
             'Partie_Plante', 'Composition', 'Forme_Galenique',
@@ -32,21 +32,21 @@ export default defineEventHandler(async (event) => {
           produit: item.produit,
           IdProduit: item.IdProduit,
           createdAt: item.createdAt,
-          details: item.produits ? {
-            id: item.produits.id,
-            nom: item.produits.Nom_Commun,
-            nomScientifique: item.produits.Nom_Scientifique,
-            famille: item.produits.Famille_Botanique,
-            partie: item.produits.Partie_Plante,
-            composition: item.produits.Composition,
-            formeGalenique: item.produits.Forme_Galenique,
-            proprietesPrincipales: item.produits.Propriete_Principale,
-            proprietesSecondaires: item.produits.Propriete_Secondaire,
-            utilisation: item.produits.Utilisation,
-            precautions: item.produits.Precautions,
-            source: item.produits.Source,
-            imageUrl: item.produits.Image_url,
-            slug: item.produits.Nom_Commun.toLowerCase()
+          details: item.produitDetails ? {
+            id: item.produitDetails.id,
+            nom: item.produitDetails.Nom_Commun,
+            nomScientifique: item.produitDetails.Nom_Scientifique,
+            famille: item.produitDetails.Famille_Botanique,
+            partie: item.produitDetails.Partie_Plante,
+            composition: item.produitDetails.Composition,
+            formeGalenique: item.produitDetails.Forme_Galenique,
+            proprietesPrincipales: item.produitDetails.Propriete_Principale,
+            proprietesSecondaires: item.produitDetails.Propriete_Secondaire,
+            utilisation: item.produitDetails.Utilisation,
+            precautions: item.produitDetails.Precautions,
+            source: item.produitDetails.Source,
+            imageUrl: item.produitDetails.Image_url,
+            slug: item.produitDetails.Nom_Commun.toLowerCase()
               .replace(/\s+/g, '-')
               .replace(/[^a-z0-9-]/g, '')
           } : null

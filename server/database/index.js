@@ -82,8 +82,28 @@ Produit.belongsToMany(User, {
   as:        'users'
 });
 
+// ——————————————
+// Relations directes Placard
+// ——————————————
+Placard.belongsTo(User, {
+  foreignKey: 'IdUser',
+  as: 'user'
+});
 
+Placard.belongsTo(Produit, {
+  foreignKey: 'IdProduit',
+  as: 'produitDetails'
+});
 
+User.hasMany(Placard, {
+  foreignKey: 'IdUser',
+  as: 'placardItems'
+});
+
+Produit.hasMany(Placard, {
+  foreignKey: 'IdProduit',
+  as: 'placardItems'
+});
 
 // Synchronisation de la base conditionnelle
 if (process.env.DB_HOST && process.env.DB_NAME) {
