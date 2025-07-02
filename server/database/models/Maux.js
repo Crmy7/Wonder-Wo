@@ -11,13 +11,20 @@ import sequelize from '../config.js';
       type: DataTypes.STRING,
       allowNull: false
     },
-    IdProduit: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'Produits',
-        key: 'id'
-      }
-    }
+    // IdProduit: {
+    //   type: DataTypes.INTEGER,
+    //   references: {
+    //     model: 'Produits',
+    //     key: 'id'
+    //   },
+    // },
+    // IdRecettes: {
+    //   type: DataTypes.INTEGER,
+    //   references: {
+    //     model: 'Recettes',
+    //     key: 'id'
+    //   },
+    // },
   }, {
     tableName: 'Maux',
     timestamps: true

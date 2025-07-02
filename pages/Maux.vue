@@ -41,7 +41,7 @@
           <button 
             @click="searchMaux"
             :disabled="loading || !searchTerm.trim()"
-            class="secondary-btn px-8 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="primary-btn px-8 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span v-if="loading">Recherche...</span>
             <span v-else>🔍 Rechercher</span>

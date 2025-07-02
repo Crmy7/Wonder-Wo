@@ -55,22 +55,22 @@ import sequelize from '../config.js';
       type: DataTypes.STRING,
       allowNull: false
     },
-    IdRecette: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'Recettes',
-        key: 'id'
-      }
-    },
-    IdMaux: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'Maux',
-        key: 'id'
-      }
-    }
+    // IdRecette: {
+    //   type: DataTypes.INTEGER,
+    //   allowNull: true,
+    //   references: {
+    //     model: 'Recettes',
+    //     key: 'id'
+    //   }
+    // },
+    // IdMaux: {
+    //   type: DataTypes.INTEGER,
+    //   allowNull: true,
+    //   references: {
+    //     model: 'Maux',
+    //     key: 'id'
+    //   }
+    // }
   }, {
     tableName: 'Produits',
     timestamps: true

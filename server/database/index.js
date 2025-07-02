@@ -18,56 +18,71 @@ Profil.belongsTo(User, {
     as: 'user' 
 });
 
-// Relation Produit / Recette
-Produit.hasMany(Recettes, {
-  foreignKey: 'IdProduit',
-  as: 'recettes'
+// ——————————————
+// Produit ↔ Recette
+// ——————————————
+Produit.belongsToMany(Recettes, {
+  through: 'RecetteProduit',
+  foreignKey: 'ProduitId',
+  otherKey:  'RecetteId',
+  as:        'recettes'
+});
+Recettes.belongsToMany(Produit, {
+  through: 'RecetteProduit',
+  foreignKey: 'RecetteId',
+  otherKey:  'ProduitId',
+  as:        'produits'
 });
 
-Recettes.belongsTo(Produit, {
-  foreignKey: 'IdProduit',
-  as: 'produit'
+// ——————————————
+// Produit ↔ Maux
+// ——————————————
+Produit.belongsToMany(Maux, {
+  through: 'ProduitMaux',
+  foreignKey: 'ProduitId',
+  otherKey:  'MauxId',
+  as:        'maux'
+});
+Maux.belongsToMany(Produit, {
+  through: 'ProduitMaux',
+  foreignKey: 'MauxId',
+  otherKey:  'ProduitId',
+  as:        'produits'
 });
 
-// Relation Produit / Maux
-Produit.hasMany(Maux, {
-  foreignKey: 'IdProduit',
-  as: 'maux'
+// ——————————————
+// Recettes ↔ Maux
+// ——————————————
+Recettes.belongsToMany(Maux, {
+  through: 'RecetteMaux',
+  foreignKey: 'RecetteId',
+  otherKey:  'MauxId',
+  as:        'maux'
 });
-Maux.belongsTo(Produit, {
-  foreignKey: 'IdProduit',
-  as: 'produit'
-});
-
-// Relation Recette / Maux
-Maux.hasMany(Recettes, {
-  foreignKey: 'IdMaux',
-  as: 'recettes'
-});
-Recettes.belongsTo(Maux, {
-  foreignKey: 'IdMaux',
-  as: 'maux'
+Maux.belongsToMany(Recettes, {
+  through: 'RecetteMaux',
+  foreignKey: 'MauxId',
+  otherKey:  'RecetteId',
+  as:        'recettes'
 });
 
-// Relation Users / Placard (1:1)
-User.hasOne(Placard, {
+// ——————————————
+// Users ↔ Produits (via Placard)
+// ——————————————
+User.belongsToMany(Produit, {
+  through: Placard,     // ou 'Placard' si vous préférez la chaîne
   foreignKey: 'IdUser',
-  as: 'placard'
+  otherKey:  'IdProduit',
+  as:        'produits'
 });
-Placard.belongsTo(User, {
-  foreignKey: 'IdUser',
-  as: 'user'
+Produit.belongsToMany(User, {
+  through: Placard,
+  foreignKey: 'IdProduit',
+  otherKey:  'IdUser',
+  as:        'users'
 });
 
-// Relation Placard / Produit (plusieurs produits dans le placard)
-Produit.hasMany(Placard, {
-  foreignKey: 'IdProduit',
-  as: 'placements'
-});
-Placard.belongsTo(Produit, {
-  foreignKey: 'IdProduit',
-  as: 'produits'
-});
+
 
 
 // Synchronisation de la base conditionnelle

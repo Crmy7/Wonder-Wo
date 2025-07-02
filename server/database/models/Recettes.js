@@ -41,20 +41,20 @@ const Recettes = sequelize.define('Recettes', {
         allowNull: true
     }, 
 
-    IdProduit: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'Produits',
-        key: 'id'
-      }
-    },
-    IdMaux: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'Maux',
-        key: 'id'
-      }
-    }
+    // IdProduit: {
+    //   type: DataTypes.INTEGER,
+    //   references: {
+    //     model: 'Produits',
+    //     key: 'id'
+    //   }
+    // },
+    // IdMaux: {
+    //   type: DataTypes.INTEGER,
+    //   references: {
+    //     model: 'Maux',
+    //     key: 'id'
+    //   }
+    // }
   }, {
     tableName: 'Recettes',
     timestamps: true
