@@ -1,9 +1,10 @@
 <template>
   <div>
     <main class="main-content" :class="{ 'no-nav': !isLoggedIn }">
+      <MobileNav />
       <NuxtPage />
     </main>
-    <MobileNav />
+
     
     <!-- Onboarding Modal -->
     <OnboardingModal />
