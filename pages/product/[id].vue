@@ -152,13 +152,6 @@
                   {{ inPlacard ? 'Dans le placard' : 'Ajouter au placard' }}
                 </span>
               </button>
-              
-              <button class="w-full secondary-btn">
-                ⭐ Marquer comme favori
-              </button>
-              <button class="w-full text-primary hover:bg-primary/10 text-sm font-medium py-2 rounded-lg transition-colors border border-primary/20">
-                📤 Partager
-              </button>
             </div>
 
             <!-- Informations botaniques -->
