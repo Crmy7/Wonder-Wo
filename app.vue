@@ -2,7 +2,7 @@
   <div>
     <main class="main-content" :class="{ 'no-nav': !isLoggedIn }">
       <MobileNav />
-      <NuxtPage />
+      <NuxtPage class="pb-20 md:pb-0"/>
     </main>
 
     
