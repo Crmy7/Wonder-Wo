@@ -2,7 +2,7 @@
   <!-- Navigation Desktop -->
   <nav
     v-if="authStore.isLoggedIn"
-    class="hidden md:block z-50 border-b backdrop-blur-md bg-[var(--color-blanc)] border-[rgba(33,31,28,0.1)]"
+    class="hidden md:block z-[9999] relative border-b backdrop-blur-md bg-[var(--color-blanc)] border-[rgba(33,31,28,0.1)]"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
