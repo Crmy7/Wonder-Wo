@@ -1,8 +1,129 @@
 <template>
-  <div class="min-h-screen bg-blanc overflow-x-hidden">
+  <!-- Page de bienvenue pour utilisateurs non connectés -->
+  <div v-if="!isLoggedIn" class="min-h-screen bg-gradient-to-br from-primary/10 via-blanc to-beige/20">
+    <!-- Version Mobile : Fullscreen -->
+    <div class="block md:hidden min-h-screen flex flex-col justify-center items-center px-6 py-12">
+      <!-- Logo animé -->
+      <div class="mb-12">
+        <div class="w-28 h-28 mx-auto bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-5xl shadow-xl animate-float">
+          🌿
+        </div>
+      </div>
+      
+      <!-- Titre principal mobile -->
+      <div class="text-center mb-12">
+        <h1 class="text-5xl font-effloresce text-primary mb-3">
+          Wonder Wo
+        </h1>
+        <h2 class="text-lg font-medium text-secondary mb-4">
+          Votre compagnon bien-être naturel
+        </h2>
+        <p class="text-grey-black/80 leading-relaxed px-4">
+          Découvrez des remèdes naturels personnalisés grâce à notre IA.
+        </p>
+      </div>
+
+      <!-- Boutons d'action mobile -->
+      <div class="w-full max-w-sm space-y-4">
+        <button 
+          @click="startGuidedOnboarding"
+          class="w-full primary-btn py-4 text-lg font-medium"
+        >
+          ✨ Créer mon compte
+        </button>
+        <NuxtLink to="/login" class="w-full secondary-btn py-4 text-lg font-medium block text-center">
+          🔐 Se connecter
+        </NuxtLink>
+      </div>
+
+      <!-- Footer info mobile -->
+      <div class="text-center text-grey-black/60 text-sm mt-12">
+        <p>Rejoignez des milliers d'utilisateurs qui ont choisi le naturel</p>
+      </div>
+    </div>
+
+    <!-- Version Desktop : Comme avant -->
+    <div class="hidden md:block min-h-screen flex flex-col justify-center items-center px-4 py-12">
+      <!-- Hero Section -->
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <!-- Logo animé -->
+        <div class="mb-8">
+          <div class="w-24 h-24 mx-auto bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-4xl shadow-xl animate-float">
+            🌿
+          </div>
+        </div>
+        
+        <!-- Titre principal -->
+        <h1 class="text-4xl md:text-6xl font-effloresce text-primary mb-4">
+          Wonder Wo
+        </h1>
+        <h2 class="text-xl md:text-2xl font-medium text-secondary mb-6">
+          Votre compagnon bien-être naturel
+        </h2>
+        <p class="text-grey-black/80 text-lg leading-relaxed mb-8">
+          Découvrez des remèdes naturels personnalisés grâce à notre IA. 
+          Créez des profils familiaux et accédez à notre bibliothèque de solutions naturelles validées.
+        </p>
+
+        <!-- Boutons d'action -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <button 
+            @click="startGuidedOnboarding"
+            class="primary-btn px-8 py-4 text-lg font-medium"
+          >
+            ✨ Commencer l'aventure
+          </button>
+          <NuxtLink to="/login" class="secondary-btn px-8 py-4 text-lg font-medium">
+            🔐 Se connecter
+          </NuxtLink>
+        </div>
+      </div>
+
+      <!-- Aperçu des fonctionnalités -->
+      <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+        <div class="bg-blanc/80 backdrop-blur-sm p-6 rounded-2xl text-center border border-beige/50">
+          <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-3xl">🤖</span>
+          </div>
+          <h3 class="font-effloresce text-lg text-primary mb-2">IA Personnalisée</h3>
+          <p class="text-grey-black/70 text-sm">
+            Recommandations adaptées à vos symptômes et profil de santé
+          </p>
+        </div>
+
+        <div class="bg-blanc/80 backdrop-blur-sm p-6 rounded-2xl text-center border border-beige/50">
+          <div class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-3xl">🏺</span>
+          </div>
+          <h3 class="font-effloresce text-lg text-secondary mb-2">Placard Virtuel</h3>
+          <p class="text-grey-black/70 text-sm">
+            Gérez vos remèdes naturels et suivez vos stocks facilement
+          </p>
+        </div>
+
+        <div class="bg-blanc/80 backdrop-blur-sm p-6 rounded-2xl text-center border border-beige/50">
+          <div class="w-16 h-16 bg-beige/60 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-3xl">📚</span>
+          </div>
+          <h3 class="font-effloresce text-lg text-primary mb-2">Bibliothèque</h3>
+          <p class="text-grey-black/70 text-sm">
+            Explorez des milliers de remèdes naturels et traditions ancestrales
+          </p>
+        </div>
+      </div>
+
+      <!-- Footer info -->
+      <div class="text-center text-grey-black/60 text-sm">
+        <p>Rejoignez des milliers d'utilisateurs qui ont choisi le naturel</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu principal pour utilisateurs connectés -->
+  <div v-else class="min-h-screen bg-blanc overflow-x-hidden">
     <!-- Version Desktop : Landing Page complète -->
     <div class="hidden md:block">
-      <!-- Hero Section -->
+    <!-- Hero Section -->
       <section class="relative py-20 lg:py-32">
         <!-- Background decoratif -->
         <div class="absolute inset-0 bg-gradient-to-br from-beige/20 via-transparent to-primary/10"></div>
@@ -22,7 +143,7 @@
           </h1>
           <h2 class="text-2xl lg:text-3xl font-effloresce text-grey-black mb-6" data-aos="fade-in" data-aos-duration="1000">
             Votre compagnon bien-être naturel
-          </h2>
+        </h2>
           
           <!-- Sous-titre -->
           <p class="text-lg lg:text-xl text-grey-black/80 mb-8 max-w-3xl mx-auto leading-relaxed" data-aos="fade-in" data-aos-duration="1000">
@@ -31,7 +152,7 @@
           </p>
           
           <!-- CTA Buttons -->
-          <div v-if="!authStore.loading && !authStore.isLoggedIn" class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+          <div v-if="!loading && !isLoggedIn" class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <NuxtLink to="/register" class="primary-btn text-lg px-8 py-4 font-medium">
               🚀 Commencer gratuitement
             </NuxtLink>
@@ -40,7 +161,7 @@
             </NuxtLink>
           </div>
           
-          <div v-else-if="!authStore.loading && authStore.isLoggedIn" class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+          <div v-else-if="!loading && isLoggedIn" class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <NuxtLink to="/profil" class="primary-btn text-lg px-8 py-4 font-medium">
               📋 Accéder à mes profils
             </NuxtLink>
@@ -78,7 +199,7 @@
               Une approche moderne et personnalisée du bien-être naturel pour toute votre famille
             </p>
           </div>
-          
+
           <div class="grid md:grid-cols-3 gap-8 lg:gap-12">
             <!-- Feature 1 -->
             <div class="text-center group" data-aos="fade-up" data-aos-duration="1000">
@@ -130,7 +251,7 @@
               3 étapes simples pour accéder à vos remèdes naturels personnalisés
             </p>
           </div>
-          
+
           <div class="grid md:grid-cols-3 gap-8 lg:gap-12">
             <!-- Étape 1 -->
             <div class="relative" data-aos="fade-right" data-aos-duration="1000">
@@ -240,7 +361,7 @@
               pour leur bien-être naturel quotidien.
             </p>
             
-            <div v-if="!authStore.loading && !authStore.isLoggedIn" class="flex flex-col sm:flex-row gap-4 justify-center">
+            <div v-if="!loading && !isLoggedIn" class="flex flex-col sm:flex-row gap-4 justify-center">
               <NuxtLink to="/register" class="bg-blanc text-primary px-8 py-4 rounded-xl font-medium hover:bg-blanc/90 transition-colors">
                 Créer mon compte gratuit
               </NuxtLink>
@@ -249,7 +370,7 @@
               </button>
             </div>
             
-            <div v-else-if="authStore.isLoggedIn" class="flex flex-col sm:flex-row gap-4 justify-center">
+            <div v-else-if="isLoggedIn" class="flex flex-col sm:flex-row gap-4 justify-center">
               <NuxtLink to="/profil" class="bg-blanc text-primary px-8 py-4 rounded-xl font-medium hover:bg-blanc/90 transition-colors">
                 Accéder à mon espace
               </NuxtLink>
@@ -297,7 +418,7 @@
         </div>
 
         <!-- Statut utilisateur -->
-        <div v-if="!authStore.loading && !authStore.isLoggedIn" class="bg-gradient-to-r from-primary/10 to-secondary/10 p-4 rounded-2xl mb-6">
+        <div v-if="!loading && !isLoggedIn" class="bg-gradient-to-r from-primary/10 to-secondary/10 p-4 rounded-2xl mb-6">
           <div class="text-center">
             <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
               <span class="text-xl">🌿</span>
@@ -314,7 +435,7 @@
           </div>
         </div>
 
-        <div v-else-if="authStore.isLoggedIn" class="bg-primary/5 p-4 rounded-2xl mb-6">
+        <div v-else-if="isLoggedIn" class="bg-primary/5 p-4 rounded-2xl mb-6">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
               <span class="text-lg">👋</span>
@@ -450,7 +571,7 @@
                 <span class="font-hashtag text-primary text-lg">Explorer →</span>
               </div>
             </NuxtLink>
-            
+
             <NuxtLink to="/profil" class="w-full bg-blanc/50 p-6 rounded-2xl hover:bg-blanc/80 transition-colors relative overflow-hidden group">
               <div class="flex items-center gap-4">
                 <div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center">
@@ -474,24 +595,50 @@
             <button @click="showOnboardingAgain" class="primary-btn w-full text-sm">
               🎯 Voir le guide
             </button>
-          </div>
+        </div>
         </div>
       </div>
-    </div>
+      </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const authStore = useAuthStore()
+import { onMounted, ref } from 'vue'
+
+// Composables
+const { user, isLoggedIn, loading } = useAuthStore()
 const onboardingStore = useOnboardingStore()
+
+// État réactif
+const showWelcomePage = ref(false)
 
 // Configuration de la page
 definePageMeta({
-  layout: false,
+  layout: false
 })
 
-// Fonction pour relancer l'onboarding
+// Fonction pour démarrer l'onboarding guidé
+const startGuidedOnboarding = () => {
+  onboardingStore.setGuidedMode(true)
+  onboardingStore.resetOnboarding()
+  onboardingStore.showOnboarding()
+}
+
+// Vérifier le statut au montage
+onMounted(() => {
+  // Plus de vérification automatique de l'onboarding
+  // Il ne s'affichera que sur choix de l'utilisateur
+})
+
+// Fonction pour afficher l'onboarding manuellement en mode révision
+const showOnboardingManual = () => {
+  onboardingStore.setGuidedMode(false)
+  onboardingStore.showOnboarding()
+}
+
+// Fonction pour relancer l'onboarding en mode révision
 const showOnboardingAgain = () => {
+  onboardingStore.setGuidedMode(false)
   onboardingStore.showOnboarding()
 }
 

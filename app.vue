@@ -1,6 +1,6 @@
 <template>
   <div>
-    <main class="main-content">
+    <main class="main-content" :class="{ 'no-nav': !isLoggedIn }">
       <NuxtPage />
     </main>
     <MobileNav />
@@ -11,33 +11,32 @@
 </template>
 
 <script setup lang="ts">
-const onboardingStore = useOnboardingStore()
+const { isLoggedIn } = useAuthStore()
 
-// Initialiser l'onboarding au montage de l'app
-onMounted(() => {
-  // Vérifier le statut de l'onboarding
-  onboardingStore.checkOnboardingStatus()
-  
-  // Si l'utilisateur n'a jamais vu l'onboarding, l'afficher après un délai
-  if (!onboardingStore.hasSeenOnboarding) {
-    setTimeout(() => {
-      onboardingStore.showOnboarding()
-    }, 1500) // Délai pour laisser l'app se charger proprement
-  }
-})
+// Pas d'initialisation automatique de l'onboarding
+// Il ne s'affichera que sur choix de l'utilisateur
 </script>
 
 <style>
 .main-content {
-  /* Espace pour navigation mobile en bas */
+  /* Espace pour navigation mobile en bas par défaut */
   padding-bottom: 80px;
 }
 
-/* Sur desktop, espace pour navigation en haut */
+/* Si pas connecté, pas de padding pour la nav */
+.main-content.no-nav {
+  padding-bottom: 0;
+}
+
+/* Sur desktop, espace pour navigation en haut si connecté */
 @media (min-width: 768px) {
   .main-content {
     padding-bottom: 0;
     padding-top: 64px; /* Hauteur de la nav desktop */
+  }
+  
+  .main-content.no-nav {
+    padding-top: 0;
   }
 }
 </style>

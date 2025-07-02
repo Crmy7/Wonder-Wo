@@ -17,10 +17,18 @@ export const useOnboardingStore = defineStore('onboarding', () => {
       accent: 'Naturel & Personnalisé'
     },
     {
+      id: 'expectations',
+      title: 'Vos Attentes Principales',
+      subtitle: 'Personnalisons votre expérience',
+      description: 'Quels sont vos besoins prioritaires ? Nous adapterons nos recommandations selon vos attentes pour un accompagnement plus efficace.',
+      icon: '🎯',
+      accent: 'Personnalisation'
+    },
+    {
       id: 'ai',
       title: 'Intelligence Artificielle',
       subtitle: 'Des recommandations sur mesure',
-      description: 'Notre IA analyse vos symptômes, votre profil et vos préférences pour vous proposer des solutions naturelles adaptées.',
+      description: 'Notre IA analyse vos attentes, symptômes et profil pour vous proposer des solutions naturelles parfaitement adaptées.',
       icon: '🤖',
       accent: 'Smart & Précis'
     },
@@ -28,27 +36,58 @@ export const useOnboardingStore = defineStore('onboarding', () => {
       id: 'cupboard',
       title: 'Votre Placard Virtuel',
       subtitle: 'Gérez vos remèdes facilement',
-      description: 'Organisez vos produits naturels, suivez vos stocks et optimisez l\'utilisation de chaque remède.',
+      description: 'Organisez vos produits naturels, suivez vos stocks et optimisez l\'utilisation de chaque remède selon vos besoins.',
       icon: '🏺',
       accent: 'Organisé & Pratique'
     },
     {
       id: 'library',
       title: 'Bibliothèque de Savoirs',
-      subtitle: 'Explorez les remèdes ancestraux',
-      description: 'Accédez à notre base de connaissances complète avec conseils d\'experts et traditions naturelles.',
+      subtitle: 'Solutions ciblées pour vos maux',
+      description: 'Accédez prioritairement aux remèdes pour vos attentes principales : stress, sommeil, anxiété, immunité, digestif.',
       icon: '📚',
       accent: 'Sagesse & Tradition'
     },
     {
-      id: 'start',
-      title: 'Prêt à Commencer ?',
-      subtitle: 'Votre voyage bien-être vous attend',
-      description: 'Créez votre profil personnalisé et recevez vos premières recommandations adaptées à vos besoins.',
+      id: 'register',
+      title: 'Créez Votre Compte',
+      subtitle: 'Rejoignez la communauté Wonder Wo',
+      description: 'Créez votre compte personnel pour sauvegarder vos préférences et accéder à toutes les fonctionnalités.',
       icon: '✨',
-      accent: 'Votre Aventure'
+      accent: 'Votre Espace'
     }
   ]
+
+  // État pour la personnalisation
+  const userExpectations = ref<string[]>([])
+  const availableExpectations = [
+    'stress',
+    'troubles du sommeil', 
+    'anxiété',
+    'immunité',
+    'digestif',
+    'énergie',
+    'beauté naturelle',
+    'détox'
+  ]
+
+  // Sauvegarder les attentes
+  const saveExpectations = (expectations: string[]) => {
+    userExpectations.value = expectations
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('wonder-wo-expectations', JSON.stringify(expectations))
+    }
+  }
+
+  // Charger les attentes sauvegardées
+  const loadExpectations = () => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('wonder-wo-expectations')
+      if (stored) {
+        userExpectations.value = JSON.parse(stored)
+      }
+    }
+  }
 
   // Vérifier si l'onboarding a été vu
   const checkOnboardingStatus = () => {
@@ -85,9 +124,34 @@ export const useOnboardingStore = defineStore('onboarding', () => {
     isOnboardingVisible.value = false
   }
 
-  // Navigation
+  // Mode onboarding (guidé ou révision)
+  const isGuidedMode = ref(false) // true = avec création compte, false = révision seulement
+
+  // Définir le mode onboarding
+  const setGuidedMode = (guided: boolean) => {
+    isGuidedMode.value = guided
+  }
+
+  // Getters
+  const isFirstStep = computed(() => currentStep.value === 0)
+  const isLastStep = computed(() => currentStep.value === visibleSteps.value.length - 1)
+  const currentStepData = computed(() => visibleSteps.value[currentStep.value])
+  const progress = computed(() => ((currentStep.value + 1) / visibleSteps.value.length) * 100)
+
+  // Étapes visibles selon le mode
+  const visibleSteps = computed(() => {
+    if (isGuidedMode.value) {
+      // Mode guidé : toutes les étapes
+      return steps
+    } else {
+      // Mode révision : sans l'étape de création de compte
+      return steps.filter(step => step.id !== 'register')
+    }
+  })
+
+  // Navigation adaptée aux étapes visibles
   const nextStep = () => {
-    if (currentStep.value < steps.length - 1) {
+    if (currentStep.value < visibleSteps.value.length - 1) {
       currentStep.value++
     }
   }
@@ -99,16 +163,10 @@ export const useOnboardingStore = defineStore('onboarding', () => {
   }
 
   const goToStep = (stepIndex: number) => {
-    if (stepIndex >= 0 && stepIndex < steps.length) {
+    if (stepIndex >= 0 && stepIndex < visibleSteps.value.length) {
       currentStep.value = stepIndex
     }
   }
-
-  // Getters
-  const isFirstStep = computed(() => currentStep.value === 0)
-  const isLastStep = computed(() => currentStep.value === steps.length - 1)
-  const currentStepData = computed(() => steps[currentStep.value])
-  const progress = computed(() => ((currentStep.value + 1) / steps.length) * 100)
 
   // Reset pour développement
   const resetOnboarding = () => {
@@ -124,6 +182,7 @@ export const useOnboardingStore = defineStore('onboarding', () => {
     isOnboardingVisible: readonly(isOnboardingVisible),
     currentStep: readonly(currentStep),
     steps,
+    visibleSteps,
     
     // Getters
     isFirstStep,
@@ -139,6 +198,12 @@ export const useOnboardingStore = defineStore('onboarding', () => {
     nextStep,
     previousStep,
     goToStep,
-    resetOnboarding
+    resetOnboarding,
+    userExpectations,
+    availableExpectations,
+    saveExpectations,
+    loadExpectations,
+    isGuidedMode,
+    setGuidedMode
   }
 }) 

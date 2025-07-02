@@ -1,6 +1,7 @@
 <template>
   <!-- Navigation Desktop -->
   <nav
+    v-if="authStore.isLoggedIn"
     class="hidden md:block fixed top-0 left-0 right-0 z-50 border-b backdrop-blur-md bg-[var(--color-blanc)] border-[rgba(33,31,28,0.1)]"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -225,6 +226,7 @@
 
   <!-- Navigation Mobile -->
   <nav
+    v-if="authStore.isLoggedIn"
     class="fixed bottom-0 left-0 right-0 z-50 border-t backdrop-blur-md bg-[var(--color-blanc)] border-[rgba(33,31,28,0.1)] md:hidden"
   >
     <div class="flex justify-around items-center px-2 py-3 max-w-full">
