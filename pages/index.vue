@@ -11,21 +11,21 @@
         
         <div class="relative max-w-6xl mx-auto px-4 text-center">
           <!-- Badge nouveau -->
-          <div class="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
+          <div class="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6" data-aos="fade-in" data-aos-duration="1000">
             <span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
             Nouveau : IA personnalisée pour toute la famille
           </div>
           
           <!-- Titre principal -->
-          <h1 class="text-5xl lg:text-7xl font-effloresce text-primary mb-6 leading-tight">
+          <h1 class="text-5xl lg:text-7xl font-effloresce text-primary mb-6 leading-tight" data-aos="fade-in" data-aos-duration="1000">
             Wonder Wo
           </h1>
-          <h2 class="text-2xl lg:text-3xl font-effloresce text-grey-black mb-6">
+          <h2 class="text-2xl lg:text-3xl font-effloresce text-grey-black mb-6" data-aos="fade-in" data-aos-duration="1000">
             Votre compagnon bien-être naturel
           </h2>
           
           <!-- Sous-titre -->
-          <p class="text-lg lg:text-xl text-grey-black/80 mb-8 max-w-3xl mx-auto leading-relaxed">
+          <p class="text-lg lg:text-xl text-grey-black/80 mb-8 max-w-3xl mx-auto leading-relaxed" data-aos="fade-in" data-aos-duration="1000">
             Découvrez des remèdes naturels personnalisés grâce à notre IA. 
             Créez des profils familiaux et accédez à notre bibliothèque de solutions naturelles validées.
           </p>
@@ -70,7 +70,7 @@
       <!-- Features Section -->
       <section class="py-20 bg-gradient-to-b from-transparent to-beige/30">
         <div class="max-w-6xl mx-auto px-4">
-          <div class="text-center mb-16">
+          <div class="text-center mb-16" data-aos="zoom-in" data-aos-duration="1000">
             <h2 class="text-3xl lg:text-4xl font-effloresce text-primary mb-4">
               Pourquoi choisir Wonder Wo ?
             </h2>
@@ -81,7 +81,7 @@
           
           <div class="grid md:grid-cols-3 gap-8 lg:gap-12">
             <!-- Feature 1 -->
-            <div class="text-center group">
+            <div class="text-center group" data-aos="fade-up" data-aos-duration="1000">
               <div class="w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <span class="text-4xl">🤖</span>
               </div>
@@ -93,7 +93,7 @@
             </div>
             
             <!-- Feature 2 -->
-            <div class="text-center group">
+            <div class="text-center group" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="100">
               <div class="w-20 h-20 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <span class="text-4xl">👨‍👩‍👧‍👦</span>
               </div>
@@ -105,7 +105,7 @@
             </div>
             
             <!-- Feature 3 -->
-            <div class="text-center group">
+            <div class="text-center group" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
               <div class="w-20 h-20 bg-gradient-to-br from-beige/60 to-beige/40 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <span class="text-4xl">📚</span>
               </div>
@@ -122,7 +122,7 @@
       <!-- How it works Section -->
       <section class="py-20">
         <div class="max-w-6xl mx-auto px-4">
-          <div class="text-center mb-16">
+          <div class="text-center mb-16" data-aos="zoom-in" data-aos-duration="1000">
             <h2 class="text-3xl lg:text-4xl font-effloresce text-primary mb-4">
               Comment ça marche ?
             </h2>
@@ -133,7 +133,7 @@
           
           <div class="grid md:grid-cols-3 gap-8 lg:gap-12">
             <!-- Étape 1 -->
-            <div class="relative">
+            <div class="relative" data-aos="fade-right" data-aos-duration="1000">
               <div class="text-center">
                 <div class="w-16 h-16 bg-primary text-blanc rounded-2xl flex items-center justify-center mx-auto mb-6 font-bold text-xl">
                   1
@@ -152,7 +152,7 @@
             </div>
             
             <!-- Étape 2 -->
-            <div class="relative">
+            <div class="relative" data-aos="fade-right" data-aos-duration="1000" data-aos-delay="100">
               <div class="text-center">
                 <div class="w-16 h-16 bg-secondary text-blanc rounded-2xl flex items-center justify-center mx-auto mb-6 font-bold text-xl">
                   2
@@ -171,7 +171,7 @@
             </div>
             
             <!-- Étape 3 -->
-            <div class="text-center">
+            <div class="text-center" data-aos="fade-right" data-aos-duration="1000" data-aos-delay="200">
               <div class="w-16 h-16 bg-gradient-to-r from-primary to-secondary text-blanc rounded-2xl flex items-center justify-center mx-auto mb-6 font-bold text-xl">
                 3
               </div>
@@ -187,16 +187,16 @@
       <!-- Demo Section -->
       <section class="py-20 bg-gradient-to-br from-primary/5 to-beige/20">
         <div class="max-w-4xl mx-auto px-4 text-center">
-          <h2 class="text-3xl lg:text-4xl font-effloresce text-primary mb-6">
+          <h2 class="text-3xl lg:text-4xl font-effloresce text-primary mb-6" data-aos="zoom-in" data-aos-duration="1000">
             Découvrez Wonder Wo en action
           </h2>
-          <p class="text-lg text-grey-black/70 mb-8">
+          <p class="text-lg text-grey-black/70 mb-8" data-aos="fade-in" data-aos-duration="1000">
             Explorez nos fonctionnalités principales et voyez comment Wonder Wo peut vous accompagner
           </p>
           
           <div class="grid md:grid-cols-3 gap-6">
             <!-- Demo 1 -->
-            <NuxtLink to="/maux" class="group bg-blanc/80 backdrop-blur-sm p-6 rounded-2xl border border-beige hover:border-primary/40 transition-all duration-300 hover:scale-105">
+            <NuxtLink to="/maux" class="group bg-blanc/80 backdrop-blur-sm p-6 rounded-2xl border border-beige hover:border-primary/40 transition-all duration-300 hover:scale-105" data-aos="fade-up" data-aos-duration="1000">
               <div class="w-12 h-12 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <span class="text-2xl">🔍</span>
               </div>
@@ -206,7 +206,7 @@
             </NuxtLink>
             
             <!-- Demo 2 -->
-            <NuxtLink to="/library" class="group bg-blanc/80 backdrop-blur-sm p-6 rounded-2xl border border-beige hover:border-primary/40 transition-all duration-300 hover:scale-105">
+            <NuxtLink to="/library" class="group bg-blanc/80 backdrop-blur-sm p-6 rounded-2xl border border-beige hover:border-primary/40 transition-all duration-300 hover:scale-105" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="100">
               <div class="w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <span class="text-2xl">📚</span>
               </div>
@@ -216,7 +216,7 @@
             </NuxtLink>
             
             <!-- Demo 3 -->
-            <button @click="showOnboardingAgain" class="group bg-blanc/80 backdrop-blur-sm p-6 rounded-2xl border border-beige hover:border-primary/40 transition-all duration-300 hover:scale-105">
+            <button @click="showOnboardingAgain" class="group bg-blanc/80 backdrop-blur-sm p-6 rounded-2xl border border-beige hover:border-primary/40 transition-all duration-300 hover:scale-105" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
               <div class="w-12 h-12 bg-gradient-to-br from-beige/60 to-beige/40 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <span class="text-2xl">✨</span>
               </div>
@@ -230,7 +230,7 @@
 
       <!-- CTA Final -->
       <section class="py-20">
-        <div class="max-w-4xl mx-auto px-4 text-center">
+        <div class="max-w-4xl mx-auto px-4 text-center" data-aos="zoom-in" data-aos-duration="1000">
           <div class="bg-gradient-to-r from-primary to-secondary rounded-3xl p-12 text-blanc">
             <h2 class="text-3xl lg:text-4xl font-effloresce mb-6 text-blanc">
               Prêt à commencer votre voyage bien-être ?
@@ -279,7 +279,7 @@
             
             <div class="border-t border-grey-black/10 pt-6">
               <p class="text-sm text-grey-black/40">
-                © 2024 Wonder Wo - Votre bien-être naturel • Made with 🌿
+                © 2025 Wonder Wo - Votre bien-être naturel
               </p>
             </div>
           </div>

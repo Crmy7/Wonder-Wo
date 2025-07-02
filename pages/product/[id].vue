@@ -125,9 +125,34 @@
             <!-- Actions -->
             <div class="bg-blanc p-6 rounded-2xl border border-beige space-y-3">
               <h3 class="font-semibold mb-4">Actions</h3>
-              <button class="w-full primary-btn">
-                💾 Ajouter au placard
+              
+              <!-- Bouton Placard -->
+              <button 
+                @click="togglePlacard"
+                :disabled="placardLoading || !product"
+                :class="[
+                  'w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all duration-200',
+                  inPlacard 
+                    ? 'bg-primary text-blanc hover:bg-primary/90' 
+                    : 'bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20'
+                ]"
+              >
+                <div class="w-5 h-5" :class="{ 'filter brightness-0 invert': inPlacard }">
+                  <svg viewBox="0 0 20.98 16.67" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor" d="M.81,1.25l8.91-.71-.57,15.1-8.34.52V1.25ZM0,.73l.58,8.15-.32,7.67h9.63l.27-16.56L0,.73Z"/>
+                    <path fill="currentColor" d="M8.26,10.76h-.89s-.1-1.36.03-2.59l1.21.43-.35,2.16ZM9.41.88L1.12,1.54v14.3l7.74-.48.55-14.48Z"/>
+                    <path fill="currentColor" d="M12.98,10.87h-.94l.02-1.84,1.14-.43c.13,1.23-.22,2.27-.22,2.27M19.78,1.78l-8.26-.78v14.74l8.13-.53.13-13.43Z"/>
+                    <path fill="currentColor" d="M11.21.66l8.87.84-.13,13.99-8.74.57V.66ZM10.69,16.67h10.03l-.32-7.67.58-8.15L10.82.11l-.13,16.56Z"/>
+                  </svg>
+                </div>
+                <span v-if="placardLoading">
+                  <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                </span>
+                <span v-else>
+                  {{ inPlacard ? 'Dans le placard' : 'Ajouter au placard' }}
+                </span>
               </button>
+              
               <button class="w-full secondary-btn">
                 ⭐ Marquer comme favori
               </button>
@@ -183,6 +208,15 @@ definePageMeta({
 // Composables
 const route = useRoute()
 const { produits, loading, error, loadProduits, getProduitsProps } = useProduits()
+const { 
+  addToPlacard, 
+  removeFromPlacardByProductId, 
+  checkInPlacard, 
+  loading: placardLoading 
+} = usePlacard()
+
+// État réactif pour le placard
+const inPlacard = ref(false)
 
 // ID du produit depuis l'URL
 const productId = computed(() => parseInt(route.params.id as string))
@@ -207,6 +241,35 @@ const getFormeGalenique = (forme: number): string => {
   return formes[forme as keyof typeof formes] || 'Non spécifié'
 }
 
+// Fonction pour basculer l'état du placard
+const togglePlacard = async () => {
+  if (!product.value) return
+  
+  try {
+    if (inPlacard.value) {
+      await removeFromPlacardByProductId(product.value.id)
+      inPlacard.value = false
+    } else {
+      await addToPlacard(product.value.id)
+      inPlacard.value = true
+    }
+  } catch (error) {
+    console.error('Erreur lors de la modification du placard:', error)
+    // Optionnel : afficher une notification d'erreur
+  }
+}
+
+// Vérifier l'état du placard au montage
+const checkPlacardStatus = async () => {
+  if (product.value) {
+    try {
+      inPlacard.value = await checkInPlacard(product.value.id)
+    } catch (error) {
+      console.error('Erreur lors de la vérification du placard:', error)
+    }
+  }
+}
+
 // Charger les produits si pas encore fait
 onMounted(async () => {
   if (produits.value.length === 0) {
@@ -217,6 +280,13 @@ onMounted(async () => {
     }
   }
 })
+
+// Vérifier le statut du placard quand le produit est chargé
+watch(() => product.value, async (newProduct) => {
+  if (newProduct) {
+    await checkPlacardStatus()
+  }
+}, { immediate: true })
 
 // Vérifier si le produit existe après chargement
 watchEffect(() => {
