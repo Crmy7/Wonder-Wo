@@ -66,15 +66,15 @@
             </NuxtLink>
 
             <NuxtLink
-              to="/search"
+              to="/placard"
               class="flex items-center space-x-2 px-3 py-2 rounded-lg text-[var(--color-grey-black)] hover:bg-beige transition-all duration-200"
               :class="{
                 'bg-beige text-[var(--color-primary)]':
-                  $route.path === '/search',
+                  $route.path === '/placard',
               }"
             >
-              <img src="/img/Search_WW.svg" alt="Recherche" class="w-5 h-5" />
-              <span class="font-medium">Recherche</span>
+              <img src="/img/Placard_WW.svg" alt="Placard" class="w-5 h-5" />
+              <span class="font-medium">Placard</span>
             </NuxtLink>
           </template>
         </div>
@@ -284,21 +284,21 @@
         </NuxtLink>
 
         <NuxtLink
-          to="/search"
+          to="/placard"
           class="flex flex-col items-center justify-center min-w-0 flex-1 px-1 py-2 rounded-xl text-[var(--color-grey-black)] opacity-60 hover:bg-beige hover:opacity-80 transition-all duration-200"
           :class="{
             'bg-beige text-[var(--color-primary)] opacity-100':
-              $route.path === '/search',
+              $route.path === '/placard',
           }"
         >
           <div
             class="flex items-center justify-center mb-1 w-6 h-6 transition-transform"
-            :class="{ 'scale-110': $route.path === '/search' }"
+            :class="{ 'scale-110': $route.path === '/placard' }"
           >
-            <img src="/img/Search_WW.svg" alt="Recherche" class="w-6 h-6" />
+            <img src="/img/Placard_WW.svg" alt="Placard" class="w-6 h-6" />
           </div>
           <span class="text-xs font-medium font-hashtag truncate"
-            >Recherche</span
+            >Placard</span
           >
         </NuxtLink>
 
