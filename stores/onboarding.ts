@@ -17,14 +17,6 @@ export const useOnboardingStore = defineStore('onboarding', () => {
       accent: 'Naturel & Personnalisé'
     },
     {
-      id: 'expectations',
-      title: 'Vos Attentes Principales',
-      subtitle: 'Personnalisons votre expérience',
-      description: 'Quels sont vos besoins prioritaires ? Nous adapterons nos recommandations selon vos attentes pour un accompagnement plus efficace.',
-      icon: '🎯',
-      accent: 'Personnalisation'
-    },
-    {
       id: 'ai',
       title: 'Intelligence Artificielle',
       subtitle: 'Des recommandations sur mesure',
@@ -51,8 +43,8 @@ export const useOnboardingStore = defineStore('onboarding', () => {
     {
       id: 'register',
       title: 'Créez Votre Compte',
-      subtitle: 'Rejoignez la communauté Wonder Wo',
-      description: 'Créez votre compte personnel pour sauvegarder vos préférences et accéder à toutes les fonctionnalités.',
+      subtitle: 'Personnalisez votre expérience',
+      description: 'Créez votre compte et sélectionnez vos priorités pour des recommandations ultra-personnalisées.',
       icon: '✨',
       accent: 'Votre Espace'
     }

@@ -133,6 +133,39 @@
                       />
                     </div>
 
+                    <!-- Sélection des attentes intégrée -->
+                    <div class="pt-2">
+                      <label class="block text-sm font-medium mb-3 text-grey-black">
+                        Vos priorités bien-être (optionnel)
+                      </label>
+                      <div class="grid grid-cols-2 gap-2 mb-3">
+                        <button
+                          v-for="expectation in onboardingStore.availableExpectations"
+                          :key="expectation"
+                          type="button"
+                          @click="toggleExpectation(expectation)"
+                          :class="[
+                            'p-2 rounded-lg border transition-all duration-200 text-xs font-medium',
+                            selectedExpectations.includes(expectation)
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : 'border-grey-black/20 bg-blanc hover:border-primary/40 text-grey-black'
+                          ]"
+                        >
+                          <div class="flex items-center gap-1.5">
+                            <div class="w-3 h-3 rounded border" :class="selectedExpectations.includes(expectation) ? 'bg-primary border-primary' : 'border-grey-black/30'">
+                              <svg v-if="selectedExpectations.includes(expectation)" class="w-2 h-2 text-blanc m-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                              </svg>
+                            </div>
+                            <span class="capitalize">{{ expectation }}</span>
+                          </div>
+                        </button>
+                      </div>
+                      <p class="text-xs text-grey-black/60 text-center">
+                        {{ selectedExpectations.length }} priorité(s) sélectionnée(s)
+                      </p>
+                    </div>
+
                     <!-- Messages d'erreur/succès -->
                     <div v-if="registerError" class="p-3 bg-secondary/10 border border-secondary/20 rounded-lg">
                       <p class="text-secondary text-xs font-medium">{{ registerError }}</p>
@@ -142,63 +175,6 @@
                       <p class="text-primary text-xs font-medium">{{ registerSuccess }}</p>
                     </div>
                   </form>
-                </div>
-
-                <!-- Étape personnalisation des attentes -->
-                <div v-else-if="onboardingStore.currentStepData.id === 'expectations'">
-                  <!-- Icône animée -->
-                  <div class="relative mb-6">
-                    <div class="w-20 md:w-24 h-20 md:h-24 mx-auto bg-gradient-to-br from-beige to-blanc rounded-full flex items-center justify-center text-4xl md:text-5xl shadow-lg ring-1 ring-beige/50 step-icon">
-                      {{ onboardingStore.currentStepData.icon }}
-                    </div>
-                    <div class="absolute inset-0 w-20 md:w-24 h-20 md:h-24 mx-auto bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-xl -z-10 step-glow"></div>
-                  </div>
-
-                  <!-- Titre et description -->
-                  <div class="accent-text-primary text-sm mb-2 font-hashtag">
-                    {{ onboardingStore.currentStepData.accent }}
-                  </div>
-                  <h2 class="text-xl md:text-2xl font-bold font-effloresce text-primary mb-2">
-                    {{ onboardingStore.currentStepData.title }}
-                  </h2>
-                  <h3 class="text-base md:text-lg font-medium font-sans text-secondary mb-4">
-                    {{ onboardingStore.currentStepData.subtitle }}
-                  </h3>
-                  <p class="text-grey-black/80 leading-relaxed font-sans text-sm md:text-base mb-6">
-                    {{ onboardingStore.currentStepData.description }}
-                  </p>
-
-                  <!-- Sélection des attentes -->
-                  <div class="text-left max-w-md mx-auto">
-                    <p class="text-sm font-medium text-grey-black mb-4">
-                      Sélectionnez vos priorités (plusieurs choix possibles) :
-                    </p>
-                    <div class="grid grid-cols-2 gap-3 mb-4">
-                      <button
-                        v-for="expectation in onboardingStore.availableExpectations"
-                        :key="expectation"
-                        @click="toggleExpectation(expectation)"
-                        :class="[
-                          'p-3 rounded-xl border-2 transition-all duration-200 text-sm font-medium',
-                          selectedExpectations.includes(expectation)
-                            ? 'border-primary bg-primary/10 text-primary'
-                            : 'border-grey-black/20 bg-blanc hover:border-primary/40 text-grey-black'
-                        ]"
-                      >
-                        <div class="flex items-center gap-2">
-                          <div class="w-4 h-4 rounded border" :class="selectedExpectations.includes(expectation) ? 'bg-primary border-primary' : 'border-grey-black/30'">
-                            <svg v-if="selectedExpectations.includes(expectation)" class="w-3 h-3 text-blanc m-0.5" fill="currentColor" viewBox="0 0 20 20">
-                              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                          </div>
-                          <span class="capitalize">{{ expectation }}</span>
-                        </div>
-                      </button>
-                    </div>
-                    <p class="text-xs text-grey-black/60 text-center">
-                      {{ selectedExpectations.length }} priorité(s) sélectionnée(s)
-                    </p>
-                  </div>
                 </div>
 
                 <!-- Autres étapes (contenu par défaut) -->
@@ -354,6 +330,12 @@ const handleRegister = async () => {
   
   try {
     await authStore.register(registerForm.email, registerForm.password)
+    
+    // Sauvegarder les attentes sélectionnées
+    if (selectedExpectations.value.length > 0) {
+      onboardingStore.saveExpectations(selectedExpectations.value)
+    }
+    
     registerSuccess.value = 'Compte créé avec succès ! 🎉'
     
     // Attendre un peu puis terminer l'onboarding
@@ -369,11 +351,6 @@ const handleRegister = async () => {
 }
 
 const handleNext = () => {
-  // Si on est sur l'étape des attentes, sauvegarder les sélections
-  if (onboardingStore.currentStepData.id === 'expectations') {
-    onboardingStore.saveExpectations(selectedExpectations.value)
-  }
-  
   // Si on est sur l'étape d'inscription, valider le formulaire
   if (onboardingStore.currentStepData.id === 'register') {
     handleRegister()
