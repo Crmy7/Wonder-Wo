@@ -156,7 +156,7 @@
 
       <!-- Voir les détails -->
       <NuxtLink
-        :to="`./recette/${remedy.idRecette}`"
+        :to="`./recettes/${remedy.idRecette}`"
         class="bg-beige/40 hover:bg-primary hover:text-blanc transition-all duration-300 text-primary px-3 py-1 rounded-full border border-primary/40 font-medium text-sm"
       >
         <span>Voir détails</span>
