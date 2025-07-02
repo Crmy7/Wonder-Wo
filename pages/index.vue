@@ -558,7 +558,7 @@
                 <span class="font-hashtag text-primary text-lg">Chercher →</span>
               </div>
             </NuxtLink>
-            
+
             <NuxtLink to="/library" class="w-full bg-blanc/50 p-6 rounded-2xl hover:bg-blanc/80 transition-colors relative overflow-hidden group">
               <div class="flex items-center gap-4">
                 <div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center">
@@ -645,12 +645,18 @@ const showOnboardingAgain = () => {
 // Fonctions pour les raccourcis mobile
 const searchMal = (mal: string) => {
   // Naviguer vers /maux avec le terme de recherche
-  navigateTo(`/maux?q=${encodeURIComponent(mal)}`)
+  navigateTo({
+    path: '/maux',
+    query: { q: mal }
+  })
 }
 
 const searchProduct = (product: string) => {
   // Naviguer vers /library avec le terme de recherche
-  navigateTo(`/library?q=${encodeURIComponent(product)}`)
+  navigateTo({
+    path: '/library',
+    query: { q: product }
+  })
 }
 
 // Meta données pour le SEO

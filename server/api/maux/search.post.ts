@@ -162,90 +162,137 @@ export default defineEventHandler(async (event) => {
         return Math.min(score, 1.0) // Cap à 1.0
       }
 
-      // 5. Traiter les produits trouvés directement
-      console.log('🔍 [ETAPE 6] Traitement des produits trouvés:', produitsRecommandes.length)
-      for (const produit of produitsRecommandes) {
-        const dansPlacard = produitsPlacardIds.includes(produit.id)
-        const score = calculerScore([produit.id], false)
-        console.log(`📝 [ETAPE 6] Produit: ${produit.Nom_Commun}, dans placard: ${dansPlacard}, score: ${score}`)
-        
-        // Ajouter le produit comme remède simple
-        const resultatProduit: ResultatRecherche = {
-          id: `produit-${produit.id}`,
-          type: 'produit_simple',
-          nomRecette: `Usage de ${produit.Nom_Commun}`,
-          description: produit.Utilisation || `Remède naturel à base de ${produit.Nom_Commun}`,
-          typeApplication: 'Usage direct',
-          produits: [{
-            id: produit.id,
-            nom: produit.Nom_Commun,
-            nomScientifique: produit.Nom_Scientifique,
-            dansPlacard,
-            imageUrl: produit.Image_url || '🌿',
-            proprietes: produit.Propriete_Principale || ''
-          }],
-          produitsPlacardDisponibles: dansPlacard ? 1 : 0,
-          sourceDocumentaire: 'Propriétés thérapeutiques',
-          adapteAuProfil: true,
-          raisonNonAdapte: null,
-          score,
-          categorie: 'Produit naturel',
-          imageUrl: produit.Image_url || '🌿',
-          efficacite: 0.7
-        }
-        resultats.push(resultatProduit)
-      }
+      // 5. IGNORER les produits simples - on veut seulement des vraies recettes
+      console.log('🔍 [ETAPE 6] Produits trouvés ignorés (on veut seulement des recettes):', produitsRecommandes.length)
 
-      // 6. Pour les maux trouvés, chercher des recettes potentielles
-      // (Simplification - on pourrait ajouter une logique plus complexe plus tard)
-      console.log('🔍 [ETAPE 7] Traitement des maux trouvés:', mauxTrouves.length)
-      if (mauxTrouves.length > 0) {
-        // Créer un remède générique basé sur le premier mal trouvé
-        const premierMal = mauxTrouves[0]
-        const produitsLies = produitsRecommandes.slice(0, 3) // Prendre les 3 premiers produits
-        console.log(`📝 [ETAPE 7] Premier mal: ${premierMal.Symptom}, produits liés: ${produitsLies.length}`)
-        
-        if (produitsLies.length > 0) {
-          const produitIds = produitsLies.map(p => p.id)
-          const score = calculerScore(produitIds, true)
+      // 6. Pour les maux trouvés, chercher leurs VRAIES recettes via les tables de liaison
+      console.log('🔍 [ETAPE 7] Recherche des vraies recettes pour les maux trouvés:', mauxTrouves.length)
+      
+      for (const mal of mauxTrouves) {
+        try {
+          console.log(`🔍 [ETAPE 7] Recherche recettes pour mal: "${mal.Symptom}" (ID: ${mal.id})`)
           
-          const resultatMal: ResultatRecherche = {
-            id: `mal-${premierMal.id}-combinaison`,
-            type: 'recette',
-            nomRecette: `Remède naturel pour ${premierMal.Symptom}`,
-            description: `Combinaison de plantes pour traiter ${premierMal.Symptom}. Utilisation traditionnelle recommandée.`,
-            typeApplication: 'Usage interne',
-            produits: produitsLies.map((p: any): ProduitRecette => ({
-              id: p.id,
-              nom: p.Nom_Commun,
-              nomScientifique: p.Nom_Scientifique,
-              dansPlacard: produitsPlacardIds.includes(p.id),
-              imageUrl: p.Image_url || '🌿',
-              proprietes: p.Propriete_Principale || ''
-            })),
-            produitsPlacardDisponibles: produitIds.filter(id => produitsPlacardIds.includes(id)).length,
-            sourceDocumentaire: 'Pharmacopée traditionnelle',
-            adapteAuProfil: true,
-            raisonNonAdapte: null,
-            score,
-            categorie: 'Recette traditionnelle',
-            imageUrl: '🫖',
-            efficacite: 0.8
+          // Trouver les recettes liées à ce mal via la table RecetteMaux
+          const recettesLiees = await Recettes.findAll({
+            include: [
+              {
+                model: Maux,
+                as: 'maux',
+                where: { id: mal.id },
+                through: { attributes: [] }
+              }
+            ],
+            attributes: [
+              'id', 'Type_Remede', 'Type_Application', 'Recette',
+              'Tranche_age', 'Femme_Enceinte', 'Source_Documentaire', 'Efficacite'
+            ],
+            raw: false // On garde les objets Sequelize pour les relations
+          })
+          
+          console.log(`📝 [ETAPE 7] Recettes trouvées pour "${mal.Symptom}": ${recettesLiees.length}`)
+          
+          // Log détaillé de chaque recette trouvée
+          recettesLiees.forEach((recette, index) => {
+            console.log(`📋 [ETAPE 7] Recette ${index + 1}: ID=${(recette as any).id}, Type=${(recette as any).Type_Remede}, Description="${(recette as any).Recette?.substring(0, 50)}..."`)
+          })
+          
+          // Pour chaque recette, trouver ses produits
+          for (const recette of recettesLiees) {
+            try {
+              const produitsRecette = await Produit.findAll({
+                include: [
+                  {
+                    model: Recettes,
+                    as: 'recettes',
+                    where: { id: (recette as any).id },
+                    through: { attributes: [] }
+                  }
+                ],
+                attributes: [
+                  'id', 'Nom_Commun', 'Nom_Scientifique', 
+                  'Propriete_Principale', 'Image_url'
+                ],
+                raw: true
+              }) as any[]
+              
+              console.log(`📝 [ETAPE 7] Produits pour recette ${(recette as any).id}: ${produitsRecette.length}`)
+              
+              // Log des produits trouvés ou manquants
+              if (produitsRecette.length > 0) {
+                console.log(`📋 [ETAPE 7] Produits de la recette ${(recette as any).id}:`, produitsRecette.map(p => `${p.Nom_Commun} (ID: ${p.id})`))
+              } else {
+                console.warn(`⚠️ [ETAPE 7] AUCUN PRODUIT trouvé pour recette ${(recette as any).id} - AFFICHÉE QUAND MÊME`)
+                console.warn(`⚠️ [ETAPE 7] Détails recette sans produits: Type=${(recette as any).Type_Remede}, Description="${(recette as any).Recette?.substring(0, 100)}..."`)
+              }
+              
+              // Toujours traiter la recette, même sans produits
+              {
+                const produitIds = produitsRecette.map(p => p.id)
+                const score = calculerScore(produitIds, true)
+                const adapte = estAdapteAuProfil(recette)
+                
+                const resultatRecette: ResultatRecherche = {
+                  id: `mal-${mal.id}-recette-${(recette as any).id}`,
+                  idRecette: (recette as any).id,
+                  type: 'recette',
+                  nomRecette: `${getTypeRemede((recette as any).Type_Remede)} pour ${mal.Symptom}`,
+                  description: (recette as any).Recette || `Recette traditionnelle pour traiter ${mal.Symptom}`,
+                  typeApplication: getTypeApplication((recette as any).Type_Application),
+                  produits: produitsRecette.length > 0 
+                    ? produitsRecette.map((p: any): ProduitRecette => ({
+                        id: p.id,
+                        nom: p.Nom_Commun,
+                        nomScientifique: p.Nom_Scientifique,
+                        dansPlacard: produitsPlacardIds.includes(p.id),
+                        imageUrl: p.Image_url || '🌿',
+                        proprietes: p.Propriete_Principale || ''
+                      }))
+                    : [{
+                        id: 0,
+                        nom: 'Recette sans produits détaillés',
+                        nomScientifique: 'Vérifiez la base de données',
+                        dansPlacard: false,
+                        imageUrl: '❓',
+                        proprietes: 'Aucun produit associé dans RecetteProduit'
+                      }],
+                  produitsPlacardDisponibles: produitIds.filter(id => produitsPlacardIds.includes(id)).length,
+                  sourceDocumentaire: (recette as any).Source_Documentaire || 'Pharmacopée traditionnelle',
+                  adapteAuProfil: adapte,
+                  raisonNonAdapte: !adapte ? getRaisonNonAdapte(recette, profil) : null,
+                  score,
+                  categorie: 'Recette traditionnelle',
+                  imageUrl: getIconeRemede((recette as any).Type_Remede),
+                  efficacite: (recette as any).Efficacite || 0.8
+                }
+                
+                resultats.push(resultatRecette)
+                console.log(`✅ [ETAPE 7] Ajouté recette: "${resultatRecette.nomRecette}"`)
+              }
+            } catch (errProduits: any) {
+              console.warn(`⚠️ [ETAPE 7] Erreur récupération produits pour recette ${(recette as any).id}:`, errProduits.message)
+            }
           }
-          resultats.push(resultatMal)
+        } catch (errRecettes: any) {
+          console.warn(`⚠️ [ETAPE 7] Erreur récupération recettes pour mal "${mal.Symptom}":`, errRecettes.message)
         }
       }
 
-      // 7. Éliminer les doublons et trier par score de priorité
+      // 7. IGNORER la recherche secondaire par propriétés - on veut seulement des vraies recettes
+      console.log('🔍 [ETAPE 8] Recherche secondaire ignorée (on veut seulement des recettes)')
+
+      // 8. Éliminer les doublons et trier par score de priorité
       console.log('🔍 [ETAPE 8] Finalisation - résultats bruts:', resultats.length)
+      console.log('📋 [ETAPE 8] Résultats bruts détaillés:', resultats.map(r => `${r.id} - ${r.nomRecette}`))
+      
       const resultatsUniques = resultats.filter((resultat, index, self) => 
         index === self.findIndex(r => r.id === resultat.id)
       )
       
       console.log('✅ [ETAPE 8] Résultats uniques:', resultatsUniques.length)
+      console.log('📋 [ETAPE 8] Résultats uniques détaillés:', resultatsUniques.map(r => `${r.id} - ${r.nomRecette}`))
       
       resultatsUniques.sort((a, b) => {
-        // D'abord par nombre de produits placard disponibles
+        // Tri par nombre de produits placard disponibles
         if (b.produitsPlacardDisponibles !== a.produitsPlacardDisponibles) {
           return b.produitsPlacardDisponibles - a.produitsPlacardDisponibles
         }
@@ -253,7 +300,7 @@ export default defineEventHandler(async (event) => {
         return b.score - a.score
       })
       
-      console.log('✅ [ETAPE 8] Résultats triés par priorité')
+      console.log('✅ [ETAPE 8] Résultats triés par priorité (placard, score)')
 
       const response = {
         success: true,
@@ -266,7 +313,7 @@ export default defineEventHandler(async (event) => {
           recettesAvecPlacard: resultatsUniques.filter(r => r.produitsPlacardDisponibles > 0).length,
           recettesSansPlacard: resultatsUniques.filter(r => r.produitsPlacardDisponibles === 0).length
         },
-        message: `${resultatsUniques.length} remède(s) trouvé(s) pour "${symptome}"`
+        message: `${resultatsUniques.length} recette(s) trouvée(s) pour "${symptome}"`
       }
       
       console.log('🎉 [ETAPE 9] SUCCÈS - Réponse finale:', {

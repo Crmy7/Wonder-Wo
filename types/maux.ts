@@ -11,6 +11,7 @@ export interface ProduitRecette {
 
 export interface ResultatRecherche {
   id: string;
+  idRecette?: number | null;
   type: "recette" | "produit_simple";
   nomRecette: string;
   description: string;
@@ -52,6 +53,28 @@ export interface RechercheResponse {
   resultats: ResultatRecherche[];
   count: number;
   placardInfo: PlacardInfo;
+  message: string;
+}
+
+export interface MauxPopulairesResponse {
+  success: boolean;
+  symptomes: string[];
+  count: number;
+  fromDatabase: boolean;
+  error?: string;
+}
+
+export interface SuggestionMal {
+  id: number;
+  symptom: string;
+  highlighted: string;
+}
+
+export interface SuggestionsResponse {
+  success: boolean;
+  suggestions: SuggestionMal[];
+  count: number;
+  searchTerm?: string;
   message: string;
 }
 

@@ -1,5 +1,5 @@
 // composables/useMaux.ts
-import type { ResultatRecherche, RechercheResponse, PlacardInfo, ProfilUtilisateur } from '~/types/maux'
+import type { ResultatRecherche, RechercheResponse, PlacardInfo, ProfilUtilisateur, MauxPopulairesResponse, SuggestionMal, SuggestionsResponse } from '~/types/maux'
 
 export const useMaux = () => {
   const resultats = ref<ResultatRecherche[]>([])
@@ -33,6 +33,9 @@ export const useMaux = () => {
         resultatsLength: data.resultats?.length
       })
       
+      // Afficher le JSON complet de la réponse
+      console.log('📋 [COMPOSABLE] RÉPONSE API COMPLÈTE:', JSON.stringify(data, null, 2))
+      
       resultats.value = data.resultats || []
       placardInfo.value = data.placardInfo || {
         totalProduits: 0,
@@ -45,6 +48,17 @@ export const useMaux = () => {
       
       console.log('✅ [COMPOSABLE] Traitement terminé - remèdes trouvés:', resultats.value.length)
       console.log('📦 [COMPOSABLE] PlacardInfo:', placardInfo.value)
+      
+      // Afficher le JSON détaillé des résultats
+      if (resultats.value.length > 0) {
+        console.log('📋 [COMPOSABLE] RÉSULTATS DÉTAILLÉS:')
+        resultats.value.forEach((resultat, index) => {
+          console.log(`--- RÉSULTAT ${index + 1} ---`)
+          console.log(JSON.stringify(resultat, null, 2))
+        })
+      } else {
+        console.log('⚠️ [COMPOSABLE] Aucun résultat trouvé')
+      }
       return data
       
     } catch (err: any) {
@@ -175,18 +189,113 @@ export const useMaux = () => {
   }
 
   // Suggestions de symptômes populaires
-  const symptomesPopulaires = [
-    'mal de tête',
-    'stress',
-    'insomnie',
-    'rhume',
-    'digestion difficile',
-    'fatigue',
-    'anxiété',
-    'mal de gorge',
-    'douleurs musculaires',
-    'brûlures d\'estomac'
-  ]
+  const symptomesPopulaires = ref<string[]>([])
+  const symptomesLoading = ref(false)
+  
+  // Suggestions d'autocomplétion
+  const suggestions = ref<SuggestionMal[]>([])
+  const suggestionsLoading = ref(false)
+  const suggestionsVisible = ref(false)
+  
+  // Charger les symptômes populaires depuis la base de données
+  const chargerSymptomesPopulaires = async (useOptimized = false) => {
+    if (symptomesPopulaires.value.length > 0) {
+      return // Déjà chargés
+    }
+    
+    symptomesLoading.value = true
+    
+    try {
+      console.log('🔍 [COMPOSABLE] Chargement des symptômes populaires', useOptimized ? '(version optimisée)' : '')
+      
+      const endpoint = useOptimized ? '/api/maux/populaires-optimise' : '/api/maux/populaires'
+      const data = await $fetch<MauxPopulairesResponse>(endpoint)
+      
+      symptomesPopulaires.value = data.symptomes || []
+      
+      console.log('✅ [COMPOSABLE] Symptômes populaires chargés:', {
+        count: data.count,
+        fromDatabase: data.fromDatabase,
+        premiers: data.symptomes.slice(0, 3)
+      })
+      
+      if (data.error) {
+        console.warn('⚠️ [COMPOSABLE] Avertissement:', data.error)
+      }
+      
+    } catch (err: any) {
+      console.error('❌ [COMPOSABLE] Erreur chargement symptômes populaires:', err)
+      
+      // Si c'est la première tentative, essayer la version optimisée
+      if (!useOptimized && err.statusCode === 500) {
+        console.log('🔄 [COMPOSABLE] Tentative avec API optimisée')
+        try {
+          await chargerSymptomesPopulaires(true)
+          return // Succès avec la version optimisée
+        } catch (err2: any) {
+          console.error('❌ [COMPOSABLE] Erreur même avec API optimisée:', err2)
+        }
+      }
+      
+      // Fallback vers des exemples par défaut
+      symptomesPopulaires.value = [
+        'mal de tête',
+        'stress',
+        'insomnie',
+        'rhume',
+        'digestion difficile',
+        'fatigue',
+        'anxiété',
+        'mal de gorge',
+        'douleurs musculaires',
+        'brûlures d\'estomac'
+      ]
+    } finally {
+      symptomesLoading.value = false
+    }
+  }
+
+  // Rechercher des suggestions d'autocomplétion
+  const rechercherSuggestions = async (terme: string) => {
+    if (!terme.trim() || terme.trim().length < 2) {
+      suggestions.value = []
+      suggestionsVisible.value = false
+      return
+    }
+
+    suggestionsLoading.value = true
+    
+    try {
+      console.log('🔍 [SUGGESTIONS] Recherche pour:', terme)
+      
+      const data = await $fetch<SuggestionsResponse>('/api/maux/suggestions', {
+        query: { q: terme }
+      })
+      
+      suggestions.value = data.suggestions || []
+      suggestionsVisible.value = true
+      
+      console.log('✅ [SUGGESTIONS] Trouvées:', data.count)
+      
+    } catch (err: any) {
+      console.error('❌ [SUGGESTIONS] Erreur:', err)
+      suggestions.value = []
+      suggestionsVisible.value = false
+    } finally {
+      suggestionsLoading.value = false
+    }
+  }
+
+  // Masquer les suggestions
+  const masquerSuggestions = () => {
+    suggestionsVisible.value = false
+  }
+
+  // Sélectionner une suggestion
+  const selectionnerSuggestion = (suggestion: SuggestionMal) => {
+    suggestionsVisible.value = false
+    return suggestion.symptom
+  }
 
   // Filtrer les résultats par catégorie
   const filtrerParCategorie = (categorie: string) => {
@@ -228,8 +337,18 @@ export const useMaux = () => {
     ajouterProduitAuPlacard,
     ajouterTousProduitsAuPlacard,
     filtrerParCategorie,
+    chargerSymptomesPopulaires,
     
-    // Constantes
-    symptomesPopulaires
+    // Données réactives des symptômes populaires
+    symptomesPopulaires: readonly(symptomesPopulaires),
+    symptomesLoading: readonly(symptomesLoading),
+    
+    // Suggestions d'autocomplétion
+    suggestions: readonly(suggestions),
+    suggestionsLoading: readonly(suggestionsLoading),
+    suggestionsVisible: readonly(suggestionsVisible),
+    rechercherSuggestions,
+    masquerSuggestions,
+    selectionnerSuggestion
   }
 }
