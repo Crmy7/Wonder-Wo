@@ -1,9 +1,12 @@
 // composables/useMaux.ts
-import type { ResultatRecherche, RechercheResponse, PlacardInfo, ProfilUtilisateur, MauxPopulairesResponse, SuggestionMal, SuggestionsResponse } from '~/types/maux'
+import type { ResultatRecherche, RechercheResponse, PlacardInfo, ProfilUtilisateur, MauxPopulairesResponse, SuggestionMal, SuggestionsResponse, IncitationPlacard } from '~/types/maux'
 
 export const useMaux = () => {
   const resultats = ref<ResultatRecherche[]>([])
+  const resultatsAvecPlacard = ref<ResultatRecherche[]>([])
+  const resultatsAucunPlacard = ref<ResultatRecherche[]>([])
   const placardInfo = ref<PlacardInfo | null>(null)
+  const incitationPlacard = ref<IncitationPlacard | null>(null)
   const loading = ref(false)
   const error = ref('')
   const searched = ref(false)
@@ -37,11 +40,14 @@ export const useMaux = () => {
       console.log('📋 [COMPOSABLE] RÉPONSE API COMPLÈTE:', JSON.stringify(data, null, 2))
       
       resultats.value = data.resultats || []
+      resultatsAvecPlacard.value = data.resultatsAvecPlacard || []
+      resultatsAucunPlacard.value = data.resultatsAucunPlacard || []
       placardInfo.value = data.placardInfo || {
         totalProduits: 0,
         recettesAvecPlacard: 0,
         recettesSansPlacard: 0
       }
+      incitationPlacard.value = data.incitationPlacard || null
       
       searched.value = true
       lastSearchTerm.value = symptome
@@ -131,7 +137,10 @@ export const useMaux = () => {
   // Réinitialiser la recherche
   const resetRecherche = () => {
     resultats.value = []
+    resultatsAvecPlacard.value = []
+    resultatsAucunPlacard.value = []
     placardInfo.value = null
+    incitationPlacard.value = null
     searched.value = false
     lastSearchTerm.value = ''
     error.value = ''
@@ -184,6 +193,22 @@ export const useMaux = () => {
       }
     } catch (error) {
       console.error('Erreur ajout multiple au placard:', error)
+      throw error
+    }
+  }
+
+  // Ajouter un produit recommandé au placard
+  const ajouterProduitRecommande = async (produitId: number) => {
+    const { addToPlacard } = usePlacard()
+    try {
+      await addToPlacard(produitId)
+      // Relancer la recherche pour mettre à jour
+      if (lastSearchTerm.value) {
+        await rechercherAvecProfilActuel(lastSearchTerm.value)
+      }
+      return { success: true }
+    } catch (error) {
+      console.error('Erreur ajout produit recommandé:', error)
       throw error
     }
   }
@@ -311,7 +336,10 @@ export const useMaux = () => {
   return {
     // État réactif
     resultats: readonly(resultats),
+    resultatsAvecPlacard: readonly(resultatsAvecPlacard),
+    resultatsAucunPlacard: readonly(resultatsAucunPlacard),
     placardInfo: readonly(placardInfo),
+    incitationPlacard: readonly(incitationPlacard),
     loading: readonly(loading),
     error: readonly(error),
     searched: readonly(searched),
@@ -336,6 +364,7 @@ export const useMaux = () => {
     clearError,
     ajouterProduitAuPlacard,
     ajouterTousProduitsAuPlacard,
+    ajouterProduitRecommande,
     filtrerParCategorie,
     chargerSymptomesPopulaires,
     

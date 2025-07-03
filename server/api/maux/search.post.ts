@@ -291,29 +291,87 @@ export default defineEventHandler(async (event) => {
       console.log('✅ [ETAPE 8] Résultats uniques:', resultatsUniques.length)
       console.log('📋 [ETAPE 8] Résultats uniques détaillés:', resultatsUniques.map(r => `${r.id} - ${r.nomRecette}`))
       
-      resultatsUniques.sort((a, b) => {
-        // Tri par nombre de produits placard disponibles
+      // Séparer et trier les résultats selon le placard
+      const resultatsAvecPlacard = resultatsUniques.filter(r => r.produitsPlacardDisponibles > 0)
+      const resultatsAucunPlacard = resultatsUniques.filter(r => r.produitsPlacardDisponibles === 0)
+      
+      // Trier chaque groupe par pertinence
+      resultatsAvecPlacard.sort((a, b) => {
+        // D'abord par adaptation au profil
+        if (b.adapteAuProfil !== a.adapteAuProfil) {
+          return b.adapteAuProfil ? 1 : -1
+        }
+        // Puis par nombre de produits placard
         if (b.produitsPlacardDisponibles !== a.produitsPlacardDisponibles) {
           return b.produitsPlacardDisponibles - a.produitsPlacardDisponibles
         }
-        // Puis par score global
+        // Enfin par score global
         return b.score - a.score
       })
       
-      console.log('✅ [ETAPE 8] Résultats triés par priorité (placard, score)')
+      resultatsAucunPlacard.sort((a, b) => {
+        // D'abord par adaptation au profil
+        if (b.adapteAuProfil !== a.adapteAuProfil) {
+          return b.adapteAuProfil ? 1 : -1
+        }
+        // Puis par score
+        return b.score - a.score
+      })
+      
+      // Réorganiser : d'abord avec placard, puis sans placard
+      const resultatsOrganises = [...resultatsAvecPlacard, ...resultatsAucunPlacard].slice(0, 15)
+      
+      console.log('✅ [ETAPE 8] Résultats triés par priorité (placard d\'abord, puis adaptés au profil)')
+
+      // Déterminer les messages d'incitation
+      let incitationPlacard = null
+      if (resultatsAvecPlacard.length === 0 && resultatsAucunPlacard.length > 0) {
+        // Aucun résultat avec placard, suggérer d'ajouter des produits
+        const produitsFrequents = new Map<number, { nom: string, count: number }>()
+        
+        resultatsAucunPlacard.slice(0, 5).forEach(recette => {
+          recette.produits.forEach(produit => {
+            if (produit.id > 0) { // Ignorer les produits "fictifs"
+              const existing = produitsFrequents.get(produit.id)
+              if (existing) {
+                existing.count++
+              } else {
+                produitsFrequents.set(produit.id, { nom: produit.nom, count: 1 })
+              }
+            }
+          })
+        })
+        
+        const produitsRecommandes = Array.from(produitsFrequents.entries())
+          .sort((a, b) => b[1].count - a[1].count)
+          .slice(0, 3)
+          .map(([id, data]) => ({ id, nom: data.nom, count: data.count }))
+        
+        if (produitsRecommandes.length > 0) {
+          incitationPlacard = {
+            message: `Pour avoir des recettes avec vos produits, ajoutez ces ingrédients populaires à votre placard :`,
+            produitsRecommandes
+          }
+        }
+      }
 
       const response = {
         success: true,
         symptome,
         profil,
-        resultats: resultatsUniques.slice(0, 15), // Limiter à 15 résultats
+        resultats: resultatsOrganises,
+        resultatsAvecPlacard: resultatsAvecPlacard.slice(0, 10),
+        resultatsAucunPlacard: resultatsAucunPlacard.slice(0, 10),
         count: resultatsUniques.length,
         placardInfo: {
           totalProduits: produitsPlacardIds.length,
-          recettesAvecPlacard: resultatsUniques.filter(r => r.produitsPlacardDisponibles > 0).length,
-          recettesSansPlacard: resultatsUniques.filter(r => r.produitsPlacardDisponibles === 0).length
+          recettesAvecPlacard: resultatsAvecPlacard.length,
+          recettesSansPlacard: resultatsAucunPlacard.length
         },
-        message: `${resultatsUniques.length} recette(s) trouvée(s) pour "${symptome}"`
+        incitationPlacard,
+        message: resultatsUniques.length > 0 
+          ? `${resultatsUniques.length} recette(s) trouvée(s) pour "${symptome}"`
+          : `Aucune recette trouvée pour "${symptome}". Essayez avec d'autres termes.`
       }
       
       console.log('🎉 [ETAPE 9] SUCCÈS - Réponse finale:', {

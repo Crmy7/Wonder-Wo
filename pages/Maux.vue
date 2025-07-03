@@ -150,6 +150,55 @@
             📦 Autres produits ({{ placardInfo.recettesSansPlacard }})
           </button>
         </div>
+        
+        <!-- Information sur le tri intelligent -->
+        <div class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div class="flex items-center gap-2 text-blue-700 text-sm">
+            <span>💡</span>
+            <span class="font-medium">Tri intelligent activé</span>
+          </div>
+          <p class="text-blue-600 text-xs mt-1">
+            Les recettes sont automatiquement triées par priorité : 
+            <strong>1)</strong> Celles utilisant vos produits du placard, 
+            <strong>2)</strong> Celles adaptées à votre âge, 
+            <strong>3)</strong> Les plus efficaces.
+          </p>
+        </div>
+      </div>
+
+      <!-- Incitation placard (si aucune recette avec le placard) -->
+      <div v-if="searched && incitationPlacard" class="bg-gradient-to-r from-primary/5 to-secondary/5 p-6 rounded-2xl border border-primary/20 mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+          <div class="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+            <span class="text-2xl">🏺</span>
+          </div>
+          
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold mb-2 flex items-center gap-2">
+              <span>💡 Astuce pour de meilleurs résultats</span>
+            </h3>
+            <p class="text-grey-black/70 mb-4">{{ incitationPlacard.message }}</p>
+            
+            <div class="flex flex-wrap gap-3">
+              <button
+                v-for="produit in incitationPlacard.produitsRecommandes"
+                :key="produit.id"
+                @click="ajouterProduitRecommande(produit.id)"
+                :disabled="loadingPlacard"
+                class="bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-50"
+              >
+                <span>+ Ajouter {{ produit.nom }}</span>
+                <span class="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
+                  {{ produit.count }} recette{{ produit.count > 1 ? 's' : '' }}
+                </span>
+              </button>
+            </div>
+            
+            <p class="text-xs text-grey-black/60 mt-3">
+              En ajoutant ces produits à votre placard, vous pourrez accéder à plus de recettes personnalisées.
+            </p>
+          </div>
+        </div>
       </div>
 
       <!-- Résultats de recherche -->
@@ -267,7 +316,10 @@ definePageMeta({
 const { currentProfil } = useProfils()
 const { 
   resultats,
+  resultatsAvecPlacard,
+  resultatsAucunPlacard,
   placardInfo,
+  incitationPlacard,
   loading,
   error,
   searched,
@@ -282,6 +334,7 @@ const {
   resetRecherche,
   clearError,
   ajouterTousProduitsAuPlacard,
+  ajouterProduitRecommande,
   symptomesPopulaires,
   symptomesLoading,
   chargerSymptomesPopulaires,
@@ -330,11 +383,11 @@ const handleProductsAdded = async () => {
 const remedesFiltres = computed(() => {
   switch (filtreActuel.value) {
     case 'placard':
-      return getRemediesAvecPlacard.value
+      return resultatsAvecPlacard.value as any[]
     case 'sans_placard':
-      return getRemediesSansPlacard.value
+      return resultatsAucunPlacard.value as any[]
     default:
-      return getRemediesTries.value
+      return resultats.value as any[] // Les résultats sont déjà triés par l'API
   }
 })
 

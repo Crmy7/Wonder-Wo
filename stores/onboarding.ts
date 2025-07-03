@@ -103,6 +103,15 @@ export const useOnboardingStore = defineStore('onboarding', () => {
         completedAt: new Date().toISOString()
       }))
     }
+    
+    // Déclencher le disclaimer médical après l'onboarding
+    // uniquement en mode guidé (nouveau utilisateur)
+    if (isGuidedMode.value) {
+      const disclaimerStore = useDisclaimerStore()
+      setTimeout(() => {
+        disclaimerStore.showDisclaimer()
+      }, 500) // Petit délai pour une transition fluide
+    }
   }
 
   // Afficher l'onboarding

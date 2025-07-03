@@ -46,13 +46,27 @@ export interface PlacardInfo {
   recettesSansPlacard: number;
 }
 
+export interface ProduitRecommande {
+  id: number;
+  nom: string;
+  count: number;
+}
+
+export interface IncitationPlacard {
+  message: string;
+  produitsRecommandes: ProduitRecommande[];
+}
+
 export interface RechercheResponse {
   success: boolean;
   symptome: string;
   profil?: ProfilUtilisateur;
   resultats: ResultatRecherche[];
+  resultatsAvecPlacard?: ResultatRecherche[];
+  resultatsAucunPlacard?: ResultatRecherche[];
   count: number;
   placardInfo: PlacardInfo;
+  incitationPlacard?: IncitationPlacard | null;
   message: string;
 }
 

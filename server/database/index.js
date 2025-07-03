@@ -6,6 +6,7 @@ import Recettes from './models/Recettes.js';
 import Maux from './models/Maux.js';
 import Placard from './models/Placard.js';
 import UserMauxCourants from './models/UserMauxCourants.js';
+import Comments from './models/Comments.js';
 
 // Relations entre les modèles
 User.hasMany(Profil, { 
@@ -146,6 +147,19 @@ Maux.hasMany(UserMauxCourants, {
   as: 'userItems'
 });
 
+// ——————————————
+// Relations Comments
+// ——————————————
+User.hasMany(Comments, {
+  foreignKey: 'user_id',
+  as: 'comments'
+});
+
+Comments.belongsTo(User, {
+  foreignKey: 'user_id',
+  as: 'user'
+});
+
 // Synchronisation de la base conditionnelle
 if (process.env.DB_HOST && process.env.DB_NAME) {
     sequelize.sync()
@@ -155,4 +169,4 @@ if (process.env.DB_HOST && process.env.DB_NAME) {
     console.log('⚠️  Configuration MySQL manquante - synchronisation ignorée');
 }
 
-export { sequelize, User, Profil, Produit, Recettes, Maux, Placard, UserMauxCourants };
+export { sequelize, User, Profil, Produit, Recettes, Maux, Placard, UserMauxCourants, Comments };

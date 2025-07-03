@@ -67,7 +67,7 @@
       </div>
 
       <!-- Navigation principale -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <!-- Gestion des utilisateurs -->
         <div class="bg-blanc p-8 rounded-2xl border border-beige shadow-sm hover:shadow-md transition-all">
           <div class="flex items-center gap-4 mb-6">
@@ -160,6 +160,37 @@
             Gérer les recettes
           </NuxtLink>
         </div>
+
+        <!-- Gestion des commentaires -->
+        <div class="bg-blanc p-8 rounded-2xl border border-beige shadow-sm hover:shadow-md transition-all">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
+              <span class="text-3xl">💬</span>
+            </div>
+            <div>
+              <h2 class="text-xl font-semibold text-grey-black">Gestion des commentaires</h2>
+              <p class="text-grey-black/60">Modérer les avis utilisateurs</p>
+            </div>
+          </div>
+          
+          <div class="space-y-3 mb-6">
+            <div class="flex justify-between text-sm">
+              <span class="text-grey-black/60">Total commentaires:</span>
+              <span class="font-medium">{{ stats.comments || 0 }}</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-grey-black/60">En attente:</span>
+              <span class="font-medium text-yellow-600">{{ stats.pendingComments || 0 }}</span>
+            </div>
+          </div>
+
+          <NuxtLink 
+            to="/admin/comments" 
+            class="w-full bg-primary text-blanc py-3 px-4 rounded-xl font-medium hover:bg-primary/90 transition-colors block text-center"
+          >
+            Gérer les commentaires
+          </NuxtLink>
+        </div>
       </div>
 
       <!-- Actions rapides -->
@@ -201,7 +232,9 @@ const stats = ref({
   users: 0,
   products: 0,
   recipes: 0,
-  admins: 0
+  admins: 0,
+  comments: 0,
+  pendingComments: 0
 })
 
 const lastUpdate = ref('Aujourd\'hui')
@@ -224,7 +257,9 @@ const loadStats = async () => {
       users: 0,
       products: 0,
       recipes: 0,
-      admins: 0
+      admins: 0,
+      comments: 0,
+      pendingComments: 0
     }
   } finally {
     loading.value = false

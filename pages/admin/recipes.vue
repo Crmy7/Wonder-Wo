@@ -115,6 +115,20 @@
                   </span>
                 </div>
 
+                <!-- Note moyenne -->
+                <div v-if="(recipe as any).rating && (recipe as any).rating.ratings_count > 0" class="mb-3">
+                  <div class="flex items-center gap-2">
+                    <div class="flex">
+                      <span v-for="i in 5" :key="i" class="text-yellow-400 text-sm">
+                        {{ i <= Math.round((recipe as any).rating.average_rating) ? '★' : '☆' }}
+                      </span>
+                    </div>
+                    <span class="text-xs text-grey-black/60">
+                      {{ (recipe as any).rating.average_rating.toFixed(1) }} ({{ (recipe as any).rating.ratings_count }} avis)
+                    </span>
+                  </div>
+                </div>
+
                 <!-- Produits et maux associés -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div v-if="recipe.produits.length > 0">
@@ -185,7 +199,7 @@
               <button
                 v-for="page in visiblePages"
                 :key="page"
-                @click="goToPage(page)"
+                @click="typeof page === 'number' ? goToPage(page) : void 0"
                 :class="[
                   'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                   page === currentPage
@@ -211,14 +225,44 @@
 
     <!-- Modal d'édition -->
     <div v-if="showEditModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div class="bg-blanc rounded-2xl border border-beige shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                 <div class="p-6 border-b border-beige">
-           <h3 class="text-xl font-semibold text-grey-black">
-             Modifier : {{ editingRecipe ? getRecipeTitle(editingRecipe) : 'Recette' }}
-           </h3>
-         </div>
+      <div class="bg-blanc rounded-2xl border border-beige shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-beige">
+          <h3 class="text-xl font-semibold text-grey-black">
+            Modifier : {{ editingRecipe ? getRecipeTitle(editingRecipe) : 'Recette' }}
+          </h3>
+        </div>
 
-        <form @submit.prevent="saveRecipe" class="p-6 space-y-6">
+        <!-- Onglets -->
+        <div class="border-b border-beige px-6">
+          <nav class="flex space-x-8">
+            <button
+              @click="activeTab = 'info'"
+              :class="[
+                'py-3 px-1 border-b-2 font-medium text-sm transition-colors',
+                activeTab === 'info'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-grey-black/60 hover:text-grey-black hover:border-grey-black/20'
+              ]"
+            >
+              Informations
+            </button>
+            <button
+              @click="activeTab = 'comments'"
+              :class="[
+                'py-3 px-1 border-b-2 font-medium text-sm transition-colors',
+                activeTab === 'comments'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-grey-black/60 hover:text-grey-black hover:border-grey-black/20'
+              ]"
+            >
+              Commentaires
+            </button>
+          </nav>
+        </div>
+
+        <!-- Contenu de l'onglet Informations -->
+        <div v-if="activeTab === 'info'">
+          <form @submit.prevent="saveRecipe" class="p-6 space-y-6">
           <!-- Type de remède -->
           <div>
             <label class="block text-sm font-medium text-grey-black mb-2">Type de remède</label>
@@ -322,6 +366,17 @@
             </button>
           </div>
         </form>
+        </div>
+
+        <!-- Contenu de l'onglet Commentaires -->
+        <div v-else-if="activeTab === 'comments' && editingRecipe">
+          <div class="p-6">
+            <CommentsSection 
+              entity-type="recette" 
+              :entity-id="editingRecipe.id"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -360,6 +415,7 @@ const {
 const searchInput = ref('')
 const showEditModal = ref(false)
 const editingRecipe = ref<any>(null)
+const activeTab = ref('info')
 const editForm = ref({
   type_remede: 1,
   type_application: 1,
@@ -424,6 +480,7 @@ const openEditModal = (recipe: any) => {
 const closeEditModal = () => {
   showEditModal.value = false
   editingRecipe.value = null
+  activeTab.value = 'info'
 }
 
 // Créer un titre intelligent pour la recette

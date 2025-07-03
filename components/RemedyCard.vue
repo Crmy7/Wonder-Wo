@@ -63,16 +63,29 @@
       </div>
     </div>
 
-    <!-- Adaptation au profil -->
+    <!-- Adaptation au profil et recommandations d'âge -->
+    <div v-if="remedy.adapteAuProfil" class="bg-green-50 border border-green-200 rounded-xl p-3 mb-4">
+      <div class="flex items-center gap-2 text-green-700">
+        <span class="text-sm">✅</span>
+        <span class="text-sm font-medium">Recommandé pour votre profil</span>
+      </div>
+      <p class="text-green-600 text-xs mt-1">
+        Cette recette est adaptée à vos critères d'âge et de sécurité.
+      </p>
+    </div>
+    
     <div
-      v-if="!remedy.adapteAuProfil"
+      v-else
       class="bg-orange-50 border border-orange-200 rounded-xl p-3 mb-4"
     >
       <div class="flex items-center gap-2 text-orange-700">
         <span class="text-sm">⚠️</span>
-        <span class="text-sm font-medium">Attention</span>
+        <span class="text-sm font-medium">Attention - Non recommandé</span>
       </div>
       <p class="text-orange-600 text-xs mt-1">{{ remedy.raisonNonAdapte }}</p>
+      <p class="text-orange-500 text-xs mt-1 font-medium">
+        Consultez un professionnel de santé avant utilisation.
+      </p>
     </div>
 
     <!-- Liste des produits -->
@@ -151,16 +164,36 @@
     </div>
 
     <!-- Actions -->
-    <div class="flex gap-3 pt-4 border-t border-beige">
+    <div class="flex flex-wrap gap-3 pt-4 border-t border-beige">
       <!-- Ajouter tous les produits manquants -->
+      <button
+        v-if="hasValidProducts && produitsMissingCount > 0"
+        @click="addAllToplacard"
+        :disabled="loadingPlacard"
+        class="bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary px-3 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-50"
+      >
+        <span>🏺</span>
+        <span v-if="loadingPlacard">Ajout...</span>
+        <span v-else>Ajouter {{ produitsMissingCount }} produit{{ produitsMissingCount > 1 ? 's' : '' }}</span>
+      </button>
 
       <!-- Voir les détails -->
       <NuxtLink
         :to="`./recettes/${remedy.idRecette}`"
-        class="bg-beige/40 hover:bg-primary hover:text-blanc transition-all duration-300 text-primary px-3 py-1 rounded-full border border-primary/40 font-medium text-sm"
+        class="bg-beige/40 hover:bg-primary hover:text-blanc transition-all duration-300 text-primary px-3 py-2 rounded-xl border border-primary/40 font-medium text-sm flex items-center gap-2"
       >
+        <span>📋</span>
         <span>Voir détails</span>
       </NuxtLink>
+      
+      <!-- Badge de priorité selon placard -->
+      <div 
+        v-if="remedy.produitsPlacardDisponibles > 0"
+        class="bg-primary/10 text-primary px-3 py-2 rounded-xl text-xs font-medium border border-primary/20 flex items-center gap-2"
+      >
+        <span>⭐</span>
+        <span>Priorité placard</span>
+      </div>
     </div>
   </div>
 </template>
@@ -185,6 +218,10 @@ const { addToPlacard } = usePlacard();
 // Computed
 const hasValidProducts = computed(() => {
   return props.remedy.produits.length > 0 && props.remedy.produits[0].id !== 0;
+});
+
+const produitsMissingCount = computed(() => {
+  return props.remedy.produits.filter(p => !p.dansPlacard && p.id > 0).length;
 });
 
 // Émissions

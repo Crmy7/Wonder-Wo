@@ -8,11 +8,20 @@
     
     <!-- Onboarding Modal -->
     <OnboardingModal />
+    
+    <!-- Disclaimer Modal -->
+    <DisclaimerModal />
   </div>
 </template>
 
 <script setup lang="ts">
 const { isLoggedIn } = useAuthStore()
+const disclaimerStore = useDisclaimerStore()
+
+// Initialiser le disclaimer store
+onMounted(() => {
+  disclaimerStore.checkDisclaimerStatus()
+})
 
 // Pas d'initialisation automatique de l'onboarding
 // Il ne s'affichera que sur choix de l'utilisateur

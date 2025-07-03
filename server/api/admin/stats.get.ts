@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   await requireAdmin(event)
   
   try {
-    const { User, Produit, Recettes } = await import('~/server/database')
+    const { User, Produit, Recettes, Comments } = await import('~/server/database')
     
     // Compter les utilisateurs
     const totalUsers = await User.count()
@@ -23,11 +23,23 @@ export default defineEventHandler(async (event) => {
     // Compter les recettes
     const totalRecipes = await Recettes.count()
     
+    // Compter les commentaires
+    const totalComments = await Comments.count()
+    
+    // Compter les commentaires en attente
+    const pendingComments = await Comments.count({
+      where: {
+        status: 'pending'
+      }
+    })
+    
     return {
       users: totalUsers,
       products: totalProducts,
       recipes: totalRecipes,
-      admins: totalAdmins
+      admins: totalAdmins,
+      comments: totalComments,
+      pendingComments: pendingComments
     }
     
   } catch (dbError) {
@@ -38,7 +50,9 @@ export default defineEventHandler(async (event) => {
       users: 1,
       products: 156,
       recipes: 89,
-      admins: 1
+      admins: 1,
+      comments: 0,
+      pendingComments: 0
     }
   }
 }) 

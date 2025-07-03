@@ -61,6 +61,24 @@
                 <p class="text-base sm:text-lg text-grey-black/70 italic mb-3 sm:mb-4">
                   Mélange d'huiles essentielles
                 </p>
+                
+                <!-- Note moyenne -->
+                <div v-if="commentsStats.ratings_count > 0" class="flex items-center gap-3 mb-3 sm:mb-4 justify-center lg:justify-start">
+                  <div class="flex items-center gap-1">
+                    <div class="flex">
+                      <span v-for="i in 5" :key="i" class="text-yellow-400 text-lg">
+                        {{ i <= Math.round(commentsStats.average_rating) ? '★' : '☆' }}
+                      </span>
+                    </div>
+                    <span class="text-sm text-grey-black/70 font-medium">
+                      {{ commentsStats.average_rating.toFixed(1) }}/5
+                    </span>
+                  </div>
+                  <span class="text-sm text-grey-black/60">
+                    ({{ commentsStats.ratings_count }} {{ commentsStats.ratings_count === 1 ? 'avis' : 'avis' }})
+                  </span>
+                </div>
+                
                 <!-- Tags informatifs -->
                 <div class="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6 justify-center lg:justify-start">
                   <span class="bg-primary/10 text-primary text-xs sm:text-sm font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-full">
@@ -265,6 +283,14 @@
             </div>
           </div>
         </div>
+
+        <!-- Section commentaires -->
+        <div v-if="remede" class="mt-8">
+          <CommentsSection 
+            entity-type="recette" 
+            :entity-id="remede.id"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -276,6 +302,12 @@ import { useRoute, useRouter } from 'vue-router'
 
 const { getRecetteById, enrichProduitsWithPlacardStatus } = useRecette()
 const { addToPlacard: addToPlacardAction } = usePlacard()
+
+// Composable pour les commentaires et notes
+const {
+  stats: commentsStats,
+  loadComments
+} = useComments()
 
 const route = useRoute()
 const router = useRouter()
@@ -312,6 +344,13 @@ onMounted(async () => {
     // Enrichir les produits avec leur statut dans le placard
     if (data.produits && data.produits.length > 0) {
       produits.value = await enrichProduitsWithPlacardStatus(data.produits)
+    }
+    
+    // Charger les statistiques des commentaires
+    try {
+      await loadComments('recette', data.id)
+    } catch (commentError) {
+      console.error('Erreur lors du chargement des stats commentaires:', commentError)
     }
     
   } catch (err: any) {

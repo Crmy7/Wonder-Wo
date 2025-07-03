@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   const search = query.search as string || ''
   
   try {
-    const { Recettes, Produit, Maux } = await import('~/server/database')
+    const { Recettes, Produit, Maux, Comments } = await import('~/server/database')
     
     // Construire la condition de recherche
     const whereCondition: any = {}
@@ -49,6 +49,33 @@ export default defineEventHandler(async (event) => {
       order: [['createdAt', 'DESC']]
     })
     
+    // Récupérer les statistiques de commentaires pour toutes les recettes
+    const recipeIds = recipes.map((r: any) => r.id)
+    const commentsStats = await Comments.findAll({
+      where: {
+        entity_type: 'recette',
+        entity_id: recipeIds,
+        status: 'approved',
+        rating: { [Comments.sequelize.Op.ne]: null }
+      },
+      attributes: [
+        'entity_id',
+        [Comments.sequelize.fn('AVG', Comments.sequelize.col('rating')), 'average_rating'],
+        [Comments.sequelize.fn('COUNT', '*'), 'ratings_count']
+      ],
+      group: ['entity_id'],
+      raw: true
+    })
+    
+    // Créer un map des statistiques par recette
+    const statsMap = commentsStats.reduce((acc: any, stat: any) => {
+      acc[stat.entity_id] = {
+        average_rating: parseFloat(stat.average_rating) || 0,
+        ratings_count: parseInt(stat.ratings_count) || 0
+      }
+      return acc
+    }, {})
+    
     return {
       recipes: recipes.map((recipe: any) => ({
         id: recipe.id,
@@ -62,7 +89,9 @@ export default defineEventHandler(async (event) => {
         produits: recipe.produits || [],
         maux: recipe.maux || [],
         created_at: recipe.createdAt,
-        updated_at: recipe.updatedAt
+        updated_at: recipe.updatedAt,
+        // Statistiques des commentaires
+        rating: statsMap[recipe.id] || { average_rating: 0, ratings_count: 0 }
       })),
       pagination: {
         page,

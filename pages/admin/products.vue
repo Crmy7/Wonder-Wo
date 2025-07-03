@@ -116,6 +116,20 @@
                 <p class="text-sm text-grey-black line-clamp-2">{{ product.proprietesPrincipales }}</p>
               </div>
 
+              <!-- Note moyenne -->
+              <div v-if="product.rating && product.rating.ratings_count > 0" class="mb-4">
+                <div class="flex items-center gap-2">
+                  <div class="flex">
+                    <span v-for="i in 5" :key="i" class="text-yellow-400 text-sm">
+                      {{ i <= Math.round(product.rating.average_rating) ? '★' : '☆' }}
+                    </span>
+                  </div>
+                  <span class="text-xs text-grey-black/60">
+                    {{ product.rating.average_rating.toFixed(1) }} ({{ product.rating.ratings_count }})
+                  </span>
+                </div>
+              </div>
+
               <div class="flex items-center justify-between">
                 <span class="text-xs text-grey-black/40">
                   {{ formatDate(product.updatedAt) }}
@@ -179,7 +193,7 @@
 
     <!-- Modal d'édition -->
     <div v-if="showEditModal" class="fixed inset-0 bg-grey-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div class="bg-blanc rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="bg-blanc rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-xl font-bold text-grey-black">Modifier le produit</h2>
           <button
@@ -192,7 +206,37 @@
           </button>
         </div>
 
-        <form @submit.prevent="saveProduct" class="space-y-6">
+        <!-- Onglets -->
+        <div class="border-b border-beige mb-6">
+          <nav class="flex space-x-8">
+            <button
+              @click="activeTab = 'info'"
+              :class="[
+                'py-2 px-1 border-b-2 font-medium text-sm transition-colors',
+                activeTab === 'info'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-grey-black/60 hover:text-grey-black hover:border-grey-black/20'
+              ]"
+            >
+              Informations
+            </button>
+            <button
+              @click="activeTab = 'comments'"
+              :class="[
+                'py-2 px-1 border-b-2 font-medium text-sm transition-colors',
+                activeTab === 'comments'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-grey-black/60 hover:text-grey-black hover:border-grey-black/20'
+              ]"
+            >
+              Commentaires
+            </button>
+          </nav>
+        </div>
+
+        <!-- Contenu de l'onglet Informations -->
+        <div v-if="activeTab === 'info'">
+          <form @submit.prevent="saveProduct" class="space-y-6">
           <!-- Informations de base -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -348,6 +392,15 @@
             </button>
           </div>
         </form>
+        </div>
+
+        <!-- Contenu de l'onglet Commentaires -->
+        <div v-else-if="activeTab === 'comments' && editingProduct">
+          <CommentsSection 
+            entity-type="produit" 
+            :entity-id="editingProduct.id"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -368,6 +421,7 @@ const searchTerm = ref('')
 const showEditModal = ref(false)
 const saving = ref(false)
 const editingProduct = ref<any>(null)
+const activeTab = ref('info')
 
 const editForm = ref({
   nom: '',
@@ -454,6 +508,7 @@ const openEditModal = (product: any) => {
 const closeEditModal = () => {
   showEditModal.value = false
   editingProduct.value = null
+  activeTab.value = 'info'
   editForm.value = {
     nom: '',
     nomScientifique: '',

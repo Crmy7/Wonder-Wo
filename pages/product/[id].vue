@@ -37,6 +37,24 @@
             <div class="flex-1">
               <h1 class="text-3xl font-bold mb-2">{{ product.nom }}</h1>
               <p class="text-lg accent-text mb-3">{{ product.nomScientifique }}</p>
+              
+              <!-- Note moyenne -->
+              <div v-if="commentsStats.ratings_count > 0" class="flex items-center gap-3 mb-3">
+                <div class="flex items-center gap-1">
+                  <div class="flex">
+                    <span v-for="i in 5" :key="i" class="text-yellow-400 text-lg">
+                      {{ i <= Math.round(commentsStats.average_rating) ? '★' : '☆' }}
+                    </span>
+                  </div>
+                  <span class="text-sm text-grey-black/70 font-medium">
+                    {{ commentsStats.average_rating.toFixed(1) }}/5
+                  </span>
+                </div>
+                <span class="text-sm text-grey-black/60">
+                  ({{ commentsStats.ratings_count }} {{ commentsStats.ratings_count === 1 ? 'avis' : 'avis' }})
+                </span>
+              </div>
+              
               <div class="flex flex-wrap gap-2">
                 <span 
                   v-for="propriete in getProduitsProps(product).slice(0, 3)" 
@@ -187,6 +205,14 @@
             </div>
           </div>
         </div>
+
+        <!-- Section commentaires -->
+        <div v-if="product" class="mt-8">
+          <CommentsSection 
+            entity-type="produit" 
+            :entity-id="product.id"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -210,6 +236,12 @@ const {
   checkInPlacard, 
   loading: placardLoading 
 } = usePlacard()
+
+// Composable pour les commentaires et notes
+const {
+  stats: commentsStats,
+  loadComments
+} = useComments()
 
 // État réactif pour le placard
 const inPlacard = ref(false)
@@ -278,10 +310,16 @@ onMounted(async () => {
   }
 })
 
-// Vérifier le statut du placard quand le produit est chargé
+// Vérifier le statut du placard et charger les stats des commentaires quand le produit est chargé
 watch(() => product.value, async (newProduct) => {
   if (newProduct) {
     await checkPlacardStatus()
+    // Charger les statistiques des commentaires
+    try {
+      await loadComments('produit', newProduct.id)
+    } catch (error) {
+      console.error('Erreur lors du chargement des stats commentaires:', error)
+    }
   }
 }, { immediate: true })
 

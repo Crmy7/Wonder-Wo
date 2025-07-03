@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
     const search = query.search as string || ''
     
     try {
-      const { Produit } = await import('~/server/database')
+      const { Produit, Comments } = await import('~/server/database')
       
       // Configuration de la pagination
       const offset = (page - 1) * limit
@@ -22,7 +22,8 @@ export default defineEventHandler(async (event) => {
         [Op.or]: [
           { Nom_Commun: { [Op.like]: `%${search}%` } },
           { Nom_Scientifique: { [Op.like]: `%${search}%` } },
-          { Famille_Botanique: { [Op.like]: `%${search}%` } }
+          { Famille_Botanique: { [Op.like]: `%${search}%` } },
+          { Propriete_Principale: { [Op.like]: `%${search}%` } }
         ]
       } : {}
       
@@ -31,33 +32,69 @@ export default defineEventHandler(async (event) => {
         where: whereClause,
         limit,
         offset,
-        order: [['createdAt', 'DESC']]
+        order: [['updatedAt', 'DESC']]
       })
 
+      // Récupérer les statistiques de commentaires pour tous les produits
+      const productIds = produits.map((p: any) => p.id)
+      const commentsStats = await Comments.findAll({
+        where: {
+          entity_type: 'produit',
+          entity_id: productIds,
+          status: 'approved',
+          rating: { [Comments.sequelize.Op.ne]: null }
+        },
+        attributes: [
+          'entity_id',
+          [Comments.sequelize.fn('AVG', Comments.sequelize.col('rating')), 'average_rating'],
+          [Comments.sequelize.fn('COUNT', '*'), 'ratings_count']
+        ],
+        group: ['entity_id'],
+        raw: true
+      })
+      
+      // Créer un map des statistiques par produit
+      const statsMap = commentsStats.reduce((acc: any, stat: any) => {
+        acc[stat.entity_id] = {
+          average_rating: parseFloat(stat.average_rating) || 0,
+          ratings_count: parseInt(stat.ratings_count) || 0
+        }
+        return acc
+      }, {})
+      
+      // Enrichir les produits avec leurs statistiques
+      const enrichedProducts = produits.map((product: any) => ({
+        id: product.id,
+        nom: product.Nom_Commun,
+        nomScientifique: product.Nom_Scientifique,
+        famille: product.Famille_Botanique,
+        partie: product.Partie_Plante,
+        composition: product.Composition,
+        formeGalenique: product.Forme_Galenique,
+        proprietesPrincipales: product.Propriete_Principale,
+        proprietesSecondaires: product.Propriete_Secondaire,
+        utilisation: product.Utilisation,
+        precautions: product.Precautions,
+        source: product.Source,
+        imageUrl: product.Image_url,
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt,
+        // Statistiques des commentaires
+        rating: statsMap[product.id] || { average_rating: 0, ratings_count: 0 }
+      }))
+      
+      const totalPages = Math.ceil(total / limit)
+      
       return {
         success: true,
-        produits: produits.map(produit => ({
-          id: produit.id,
-          nom: produit.Nom_Commun,
-          nomScientifique: produit.Nom_Scientifique,
-          famille: produit.Famille_Botanique,
-          partie: produit.Partie_Plante,
-          composition: produit.Composition,
-          formeGalenique: produit.Forme_Galenique,
-          proprietesPrincipales: produit.Propriete_Principale,
-          proprietesSecondaires: produit.Propriete_Secondaire,
-          utilisation: produit.Utilisation,
-          precautions: produit.Precautions,
-          source: produit.Source,
-          imageUrl: produit.Image_url,
-          createdAt: produit.createdAt,
-          updatedAt: produit.updatedAt
-        })),
+        produits: enrichedProducts,
         pagination: {
           page,
           limit,
           total,
-          totalPages: Math.ceil(total / limit)
+          totalPages,
+          hasNext: page < totalPages,
+          hasPrev: page > 1
         }
       }
 
