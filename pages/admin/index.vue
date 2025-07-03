@@ -67,7 +67,7 @@
       </div>
 
       <!-- Navigation principale -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <!-- Gestion des utilisateurs -->
         <div class="bg-blanc p-8 rounded-2xl border border-beige shadow-sm hover:shadow-md transition-all">
           <div class="flex items-center gap-4 mb-6">
