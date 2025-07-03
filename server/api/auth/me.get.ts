@@ -39,7 +39,8 @@ export default defineEventHandler(async (event) => {
         success: true,
         user: {
           id: user.id,
-          email: user.email
+          email: user.email,
+          role: user.role || 'user'
         }
       }
 
@@ -52,7 +53,8 @@ export default defineEventHandler(async (event) => {
         success: true,
         user: {
           id: decoded.IdUser,
-          email: 'demo@wonderwo.com' // Email par défaut pour le mode démo
+          email: 'demo@wonderwo.com', // Email par défaut pour le mode démo
+          role: 'admin' // Rôle admin par défaut pour le développement
         }
       }
     }

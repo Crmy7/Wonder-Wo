@@ -2,6 +2,7 @@
 interface User {
   id: number
   email: string
+  role?: string
 }
 
 interface AuthResponse {
@@ -14,6 +15,7 @@ export const useAuthStore = defineStore('auth', () => {
   // État de l'utilisateur
   const user = ref<User | null>(null)
   const isLoggedIn = computed(() => !!user.value)
+  const isAdmin = computed(() => user.value?.role === 'admin')
   const loading = ref(false)
   const error = ref('')
 
@@ -164,6 +166,7 @@ export const useAuthStore = defineStore('auth', () => {
     // État
     user: readonly(user),
     isLoggedIn,
+    isAdmin,
     loading: readonly(loading),
     error: readonly(error),
     

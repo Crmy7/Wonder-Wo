@@ -290,3 +290,7 @@
 a, button {
     cursor: pointer;
 }
+
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea {
+    border: 1px solid var(--color-primary) !important;
+}

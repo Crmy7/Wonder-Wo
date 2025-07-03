@@ -145,7 +145,20 @@ watch(() => form.password, () => authStore.clearError())
 onMounted(async () => {
   await authStore.checkAuth()
   if (authStore.isLoggedIn) {
-    await navigateTo('/profil')
+    console.log('🔄 [LOGIN PAGE] Utilisateur déjà connecté')
+    const route = useRoute()
+    const redirectTo = route.query.redirect as string
+    
+    if (redirectTo && redirectTo.startsWith('/admin') && authStore.isAdmin) {
+      console.log('🔄 [LOGIN PAGE] Redirection vers:', redirectTo)
+      await navigateTo(redirectTo)
+    } else if (redirectTo) {
+      console.log('🔄 [LOGIN PAGE] Redirection vers:', redirectTo)
+      await navigateTo(redirectTo)
+    } else {
+      console.log('🔄 [LOGIN PAGE] Redirection vers /profil (par défaut)')
+      await navigateTo('/profil')
+    }
   }
 })
 
@@ -163,8 +176,19 @@ const handleLogin = async () => {
     
     // Redirection après connexion réussie
     setTimeout(() => {
-      console.log('🔄 Login page - Redirection vers /profil')
-      navigateTo('/profil')
+      const route = useRoute()
+      const redirectTo = route.query.redirect as string
+      
+      if (redirectTo && redirectTo.startsWith('/admin') && authStore.isAdmin) {
+        console.log('🔄 [LOGIN PAGE] Redirection vers:', redirectTo)
+        navigateTo(redirectTo)
+      } else if (redirectTo) {
+        console.log('🔄 [LOGIN PAGE] Redirection vers:', redirectTo)
+        navigateTo(redirectTo)
+      } else {
+        console.log('🔄 [LOGIN PAGE] Redirection vers /profil (par défaut)')
+        navigateTo('/profil')
+      }
     }, 1500)
     
   } catch (err: any) {
