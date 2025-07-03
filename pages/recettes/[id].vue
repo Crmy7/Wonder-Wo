@@ -121,6 +121,83 @@
           </div>
         </div>
 
+        <!-- Produits nécessaires -->
+        <div v-if="produits && produits.length > 0" class="bg-blanc p-4 sm:p-6 lg:p-8 rounded-2xl border border-beige shadow-sm">
+          <div class="flex items-center gap-3 mb-4 sm:mb-6">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+              <span class="text-lg sm:text-2xl">🌿</span>
+            </div>
+            <div>
+              <h3 class="text-lg sm:text-xl font-semibold">Produits nécessaires</h3>
+              <p class="text-xs sm:text-sm text-grey-black/60">Ingrédients requis pour cette recette</p>
+            </div>
+          </div>
+          
+          <div class="grid gap-3 sm:gap-4">
+            <div 
+              v-for="produit in produits" 
+              :key="produit.id"
+              class="bg-beige/20 p-3 sm:p-4 rounded-xl border border-beige/40 hover:bg-beige/30 transition-colors"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <h4 class="font-semibold text-grey-black text-sm sm:text-base">{{ produit.Nom_Commun }}</h4>
+                  <div 
+                    :class="[
+                      'px-2 py-1 rounded-full text-xs font-medium',
+                      produit.inPlacard 
+                        ? 'bg-primary/10 text-primary' 
+                        : 'bg-secondary/10 text-secondary'
+                    ]"
+                  >
+                    {{ produit.inPlacard ? '✓ Dans le placard' : '○ Manquant' }}
+                  </div>
+                </div>
+                <button
+                  v-if="!produit.inPlacard"
+                  @click="addToPlacard(produit.id)"
+                  :disabled="addingToPlacard"
+                  class="bg-primary text-blanc px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+                >
+                  {{ addingToPlacard ? 'Ajout...' : 'Ajouter' }}
+                </button>
+              </div>
+              
+              <p class="text-grey-black/70 italic text-xs sm:text-sm mb-2">{{ produit.Nom_Scientifique }}</p>
+              
+              <div class="grid gap-2 sm:gap-3">
+                <div class="flex flex-wrap gap-2">
+                  <span class="bg-blanc/70 px-2 py-1 rounded text-xs">{{ produit.Famille_Botanique }}</span>
+                  <span class="bg-blanc/70 px-2 py-1 rounded text-xs">{{ produit.Partie_Plante }}</span>
+                </div>
+                
+                <div class="text-xs sm:text-sm">
+                  <p class="text-grey-black/80 mb-1"><strong>Propriétés :</strong> {{ produit.Propriete_Principale }}</p>
+                  <p class="text-grey-black/60">{{ produit.Propriete_Secondaire }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Résumé des produits -->
+          <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-primary/5 rounded-xl border border-primary/20">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-grey-black">Statut du placard</p>
+                <p class="text-xs text-grey-black/60">{{ produitsDansPlacard }} / {{ produits.length }} produits disponibles</p>
+              </div>
+              <div class="text-right">
+                <div class="text-lg font-bold" :class="allProduitsInPlacard ? 'text-primary' : 'text-secondary'">
+                  {{ allProduitsInPlacard ? '✓' : '○' }}
+                </div>
+                <p class="text-xs" :class="allProduitsInPlacard ? 'text-primary' : 'text-secondary'">
+                  {{ allProduitsInPlacard ? 'Complet' : 'Incomplet' }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Utilisation et efficacité -->
         <div class="grid gap-4 sm:gap-6 lg:gap-8">
           <div class="bg-blanc p-4 sm:p-6 rounded-2xl border border-beige">
@@ -194,10 +271,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const { getRecetteById } = useRecette()
+const { getRecetteById, enrichProduitsWithPlacardStatus } = useRecette()
+const { addToPlacard: addToPlacardAction } = usePlacard()
 
 const route = useRoute()
 const router = useRouter()
@@ -205,6 +283,17 @@ const router = useRouter()
 const loading = ref(true)
 const error = ref<string | null>(null)
 const remede = ref<any>(null)
+const produits = ref<any[]>([])
+const addingToPlacard = ref(false)
+
+// Computed properties pour le statut des produits
+const produitsDansPlacard = computed(() => {
+  return produits.value.filter(p => p.inPlacard).length
+})
+
+const allProduitsInPlacard = computed(() => {
+  return produits.value.length > 0 && produits.value.every(p => p.inPlacard)
+})
 
 onMounted(async () => {
   loading.value = true
@@ -219,12 +308,38 @@ onMounted(async () => {
       throw new Error('Recette non trouvée')
     }
     remede.value = data
+    
+    // Enrichir les produits avec leur statut dans le placard
+    if (data.produits && data.produits.length > 0) {
+      produits.value = await enrichProduitsWithPlacardStatus(data.produits)
+    }
+    
   } catch (err: any) {
     error.value = err.message || 'Erreur lors du chargement'
   } finally {
     loading.value = false
   }
 })
+
+// Fonction pour ajouter un produit au placard
+const addToPlacard = async (produitId: number) => {
+  addingToPlacard.value = true
+  try {
+    await addToPlacardAction(produitId)
+    
+    // Mettre à jour le statut local du produit
+    const produitIndex = produits.value.findIndex(p => p.id === produitId)
+    if (produitIndex !== -1) {
+      produits.value[produitIndex].inPlacard = true
+    }
+    
+  } catch (err: any) {
+    console.error('Erreur lors de l\'ajout au placard:', err)
+    // Optionnel: afficher une notification d'erreur
+  } finally {
+    addingToPlacard.value = false
+  }
+}
 
 function goBack() {
   router.back()

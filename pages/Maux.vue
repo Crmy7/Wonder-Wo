@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-blanc">
     <!-- Barre de navigation -->
-    <div class="sticky top-0 bg-blanc/90 backdrop-blur-sm border-b border-beige z-10">
+    <div class="sticky top-0 bg-blanc/90 backdrop-blur-sm border-b border-beige z-[51]">
       <div class="max-w-4xl mx-auto px-4 py-4">
         <div class="flex items-center justify-between">
           <a href="/maux" class="flex items-center gap-2 text-grey-black/60 hover:text-primary transition-colors">

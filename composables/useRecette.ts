@@ -17,7 +17,27 @@ export const useRecette = () => {
         }
     }
 
+    // Fonction pour enrichir les produits avec leur statut dans le placard
+    const enrichProduitsWithPlacardStatus = async (produits: any[]) => {
+        if (!produits || produits.length === 0) return [];
+
+        const { checkInPlacard } = usePlacard();
+
+        const enrichedProduits = await Promise.all(
+            produits.map(async (produit) => {
+                const inPlacard = await checkInPlacard(produit.id);
+                return {
+                    ...produit,
+                    inPlacard
+                };
+            })
+        );
+
+        return enrichedProduits;
+    }
+
     return {
         getRecetteById,
+        enrichProduitsWithPlacardStatus,
     };
 }

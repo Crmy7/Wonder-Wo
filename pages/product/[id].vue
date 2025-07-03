@@ -198,9 +198,12 @@ definePageMeta({
   layout: false
 })
 
+import { ref, computed, onMounted, watch, watchEffect } from 'vue'
+
 // Composables
 const route = useRoute()
-const { produits, loading, error, loadProduits, getProduitsProps } = useProduits()
+const { produits, loading, loadProduits, getProduitsProps } = useProduits()
+const error = ref<string | null>(null)
 const { 
   addToPlacard, 
   removeFromPlacardByProductId, 
@@ -270,6 +273,7 @@ onMounted(async () => {
       await loadProduits()
     } catch (err) {
       console.error('Erreur lors du chargement des produits:', err)
+      error.value = 'Erreur lors du chargement des produits'
     }
   }
 })
