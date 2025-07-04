@@ -13,7 +13,7 @@
           <span class="font-medium text-sm sm:text-base">Retour aux résultats</span>
         </button>
         
-        <div class="text-center flex-1 mx-4">
+        <div class="hidden md:block text-center flex-1 mx-4">
           <h1 class="text-xl sm:text-2xl font-bold">Wonder Wo</h1>
           <p class="text-xs sm:text-sm text-grey-black/60">Détail du remède</p>
         </div>
@@ -48,7 +48,7 @@
           <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
             <!-- Image générique pour HE -->
             <div class="w-full max-w-xs mx-auto lg:mx-0 lg:w-1/3">
-              <div class="aspect-square bg-blanc rounded-2xl border border-beige overflow-hidden flex items-center justify-center">
+              <div class="md:aspect-square h-[150px] md:h-auto md:max-h-none bg-blanc rounded-2xl border border-beige overflow-hidden flex items-center justify-center">
                 <span class="text-6xl">🪔</span>
               </div>
             </div>
@@ -175,7 +175,7 @@
                   v-if="!produit.inPlacard"
                   @click="addToPlacard(produit.id)"
                   :disabled="addingToPlacard"
-                  class="bg-primary text-blanc px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+                  class="bg-primary text-blanc px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 min-h-none"
                 >
                   {{ addingToPlacard ? 'Ajout...' : 'Ajouter' }}
                 </button>
@@ -488,9 +488,6 @@ const props = defineProps<{
 
 /* Améliorations pour le touch sur mobile */
 @media (max-width: 640px) {
-  button {
-    min-height: 44px; /* Taille minimum recommandée pour le touch */
-  }
   
   /* Amélioration de l'espacement pour les petits écrans */
   .grid {

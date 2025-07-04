@@ -1,11 +1,12 @@
 <template>
-  <div
+      <NuxtLink
+        :to="`./recettes/${remedy.idRecette}`"
     class="bg-blanc border rounded-2xl p-6 border-primary/40 transition-all duration-300 hover:shadow-lg"
   >
     <!-- En-tête de la carte -->
-    <div class="flex items-start justify-between mb-4">
+    <div class="flex flex-col-reverse md:flex-row items-start justify-between mb-4 gap-4 md:gap-0">
       <div class="flex-1">
-        <div class="flex items-center gap-2 mb-2">
+        <div class="flex items-start md:items-center gap-2 mb-2">
           <span class="text-2xl">{{ remedy.imageUrl }}</span>
           <h3 class="font-effloresce text-lg text-primary">
             {{ remedy.nomRecette }}
@@ -45,7 +46,7 @@
       </div>
 
       <!-- Statut placard -->
-      <div class="ml-4">
+      <div class="md:ml-4">
         <div
           v-if="remedy.produitsPlacardDisponibles > 0"
           class="bg-primary/10 text-primary text-xs px-3 py-1 rounded-full flex items-center gap-1"
@@ -195,7 +196,7 @@
         <span>Priorité placard</span>
       </div>
     </div>
-  </div>
+  </NuxtLink>
 </template>
 
 <script setup lang="ts">

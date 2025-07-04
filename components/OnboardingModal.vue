@@ -61,7 +61,7 @@
           </div>
 
           <!-- Contenu principal avec animations -->
-          <div class="flex-1 flex items-start justify-center px-6 md:px-8 py-4 overflow-y-auto max-h-[95vh] md:max-h-none">
+          <div class="flex-1 flex items-center pb-[90px] justify-center px-6 md:px-8 pt-4 overflow-y-auto max-h-[95vh] md:max-h-none">
             <Transition
               name="step"
               mode="out-in"
@@ -139,7 +139,7 @@
                         Vos maux courants (optionnel)
                       </label>
                       <p class="text-xs text-grey-black/60 mb-3">
-                        Sélectionnez les maux que vous rencontrez régulièrement pour des suggestions personnalisées
+                        Sélectionnez les maux que vous rencontrez régulièrement pour des recommandations optimisées selon votre placard
                       </p>
                       
                       <!-- Chargement des maux -->

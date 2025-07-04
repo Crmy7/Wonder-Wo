@@ -204,12 +204,10 @@
                 >
                   <span class="accent-text">Mes profils</span>
                 </NuxtLink>
-                <div
-                  @click="closeAllMenus"
-                  class="block px-4 py-3 text-sm border-t border-beige hover:bg-beige transition-colors cursor-pointer"
-                >
-                  <span class="accent-text">Paramètres</span>
-                </div>
+                <!-- If is admin -->
+                <NuxtLink to="/admin" v-if="authStore.isAdmin" class="block px-4 py-3 text-sm border-t border-beige hover:bg-beige transition-colors cursor-pointer">
+                  <span class="accent-text">Admin</span>
+                </NuxtLink>
                 <div
                   @click="handleLogout"
                   class="block px-4 py-3 text-sm border-t border-beige hover:bg-beige transition-colors cursor-pointer"
@@ -532,12 +530,6 @@
 
         <!-- Si connecté -->
         <template v-else>
-          <div
-            @click="closeAllMenus"
-            class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-beige transition-colors cursor-pointer"
-          >
-            <span class="accent-text">Paramètres</span>
-          </div>
           <div
             @click="handleLogout"
             class="block px-4 py-3 text-sm border-b border-gray-100 hover:bg-beige transition-colors cursor-pointer"

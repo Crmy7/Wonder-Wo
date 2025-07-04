@@ -19,7 +19,7 @@
           Votre compagnon bien-être naturel
         </h2>
         <p class="text-grey-black/80 leading-relaxed px-4">
-          Découvrez des remèdes naturels personnalisés grâce à notre IA.
+          Découvrez des remèdes naturels personnalisés selon votre placard et vos besoins.
         </p>
       </div>
 
@@ -61,7 +61,7 @@
           Votre compagnon bien-être naturel
         </h2>
         <p class="text-grey-black/80 text-lg leading-relaxed mb-8">
-          Découvrez des remèdes naturels personnalisés grâce à notre IA. 
+          Découvrez des remèdes naturels personnalisés selon votre placard virtuel. 
           Créez des profils familiaux et accédez à notre bibliothèque de solutions naturelles validées.
         </p>
 
@@ -83,21 +83,21 @@
       <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
         <div class="bg-blanc/80 backdrop-blur-sm p-6 rounded-2xl text-center border border-beige/50">
           <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span class="text-3xl">🤖</span>
+            <span class="text-3xl">🏺</span>
           </div>
-          <h3 class="font-effloresce text-lg text-primary mb-2">IA Personnalisée</h3>
+          <h3 class="font-effloresce text-lg text-primary mb-2">Placard Intelligent</h3>
           <p class="text-grey-black/70 text-sm">
-            Recommandations adaptées à vos symptômes et profil de santé
+            Recommandations personnalisées selon vos produits et votre profil
           </p>
         </div>
 
         <div class="bg-blanc/80 backdrop-blur-sm p-6 rounded-2xl text-center border border-beige/50">
           <div class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span class="text-3xl">🏺</span>
+            <span class="text-3xl">👨‍👩‍👧‍👦</span>
           </div>
-          <h3 class="font-effloresce text-lg text-secondary mb-2">Placard Virtuel</h3>
+          <h3 class="font-effloresce text-lg text-secondary mb-2">Profils Familiaux</h3>
           <p class="text-grey-black/70 text-sm">
-            Gérez vos remèdes naturels et suivez vos stocks facilement
+            Gérez les remèdes pour toute votre famille avec leurs spécificités
           </p>
         </div>
 
@@ -134,7 +134,7 @@
           <!-- Badge nouveau -->
           <div class="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6" data-aos="fade-in" data-aos-duration="1000">
             <span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-            Nouveau : IA personnalisée pour toute la famille
+            Nouveau : Recherche personnalisée selon votre placard
           </div>
           
           <!-- Titre principal -->
@@ -147,14 +147,14 @@
           
           <!-- Sous-titre -->
           <p class="text-lg lg:text-xl text-grey-black/80 mb-8 max-w-3xl mx-auto leading-relaxed" data-aos="fade-in" data-aos-duration="1000">
-            Découvrez des remèdes naturels personnalisés grâce à notre IA. 
+            Découvrez des remèdes naturels personnalisés selon votre placard virtuel. 
             Créez des profils familiaux et accédez à notre bibliothèque de solutions naturelles validées.
           </p>
           
           <!-- CTA Buttons -->
           <div v-if="!loading && !isLoggedIn" class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <NuxtLink to="/register" class="primary-btn text-lg px-8 py-4 font-medium">
-              🚀 Commencer gratuitement
+              🚀 Commencer l'aventure
             </NuxtLink>
             <NuxtLink to="/login" class="secondary-btn text-lg px-8 py-4 font-medium">
               Se connecter
@@ -174,7 +174,7 @@
           <div class="flex flex-wrap justify-center items-center gap-6 text-sm text-grey-black/60">
             <div class="flex items-center gap-2">
               <span class="text-primary">✓</span>
-              <span>100% Gratuit</span>
+              <span>Placard virtuel intelligent</span>
             </div>
             <div class="flex items-center gap-2">
               <span class="text-primary">✓</span>
@@ -182,7 +182,7 @@
             </div>
             <div class="flex items-center gap-2">
               <span class="text-primary">✓</span>
-              <span>IA personnalisée</span>
+              <span>Recherche personnalisée</span>
             </div>
           </div>
         </div>
@@ -196,7 +196,7 @@
               Pourquoi choisir Wonder Wo ?
             </h2>
             <p class="text-lg text-grey-black/70 max-w-2xl mx-auto">
-              Une approche moderne et personnalisée du bien-être naturel pour toute votre famille
+              Une approche personnalisée du bien-être naturel basée sur votre placard virtuel
             </p>
           </div>
 
@@ -204,12 +204,12 @@
             <!-- Feature 1 -->
             <div class="text-center group" data-aos="fade-up" data-aos-duration="1000">
               <div class="w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <span class="text-4xl">🤖</span>
+                <span class="text-4xl">🏺</span>
               </div>
-              <h3 class="text-xl font-effloresce text-primary mb-4">IA Personnalisée</h3>
+              <h3 class="text-xl font-effloresce text-primary mb-4">Placard Virtuel Intelligent</h3>
               <p class="text-grey-black/70 leading-relaxed">
-                Notre intelligence artificielle analyse vos symptômes, âge, et conditions spéciales 
-                pour vous proposer des recommandations sur mesure.
+                Gérez vos produits naturels et recevez des recommandations personnalisées 
+                selon ce que vous avez déjà à disposition.
               </p>
             </div>
             
@@ -248,7 +248,7 @@
               Comment ça marche ?
             </h2>
             <p class="text-lg text-grey-black/70">
-              3 étapes simples pour accéder à vos remèdes naturels personnalisés
+              3 étapes simples pour optimiser vos remèdes naturels
             </p>
           </div>
 
@@ -259,9 +259,9 @@
                 <div class="w-16 h-16 bg-primary text-blanc rounded-2xl flex items-center justify-center mx-auto mb-6 font-bold text-xl">
                   1
                 </div>
-                <h3 class="text-lg font-effloresce text-primary mb-3">Créez votre profil</h3>
+                <h3 class="text-lg font-effloresce text-primary mb-3">Remplissez votre placard</h3>
                 <p class="text-grey-black/70">
-                  Renseignez votre âge, conditions particulières et préférences naturelles
+                  Ajoutez vos produits naturels dans votre placard virtuel pour des recommandations optimisées
                 </p>
               </div>
               <!-- Flèche décorative -->
@@ -280,7 +280,7 @@
                 </div>
                 <h3 class="text-lg font-effloresce text-primary mb-3">Décrivez vos maux</h3>
                 <p class="text-grey-black/70">
-                  Utilisez notre moteur de recherche intelligent pour décrire vos symptômes
+                  Utilisez notre moteur de recherche pour décrire vos symptômes et besoins
                 </p>
               </div>
               <!-- Flèche décorative -->
@@ -296,9 +296,9 @@
               <div class="w-16 h-16 bg-gradient-to-r from-primary to-secondary text-blanc rounded-2xl flex items-center justify-center mx-auto mb-6 font-bold text-xl">
                 3
               </div>
-              <h3 class="text-lg font-effloresce text-primary mb-3">Recevez vos remèdes</h3>
+              <h3 class="text-lg font-effloresce text-primary mb-3">Recevez vos recommandations</h3>
               <p class="text-grey-black/70">
-                Notre IA vous propose des solutions naturelles adaptées à votre profil
+                Obtenez des solutions personnalisées privilégiant ce que vous avez déjà
               </p>
             </div>
           </div>
@@ -312,7 +312,7 @@
             Découvrez Wonder Wo en action
           </h2>
           <p class="text-lg text-grey-black/70 mb-8" data-aos="fade-in" data-aos-duration="1000">
-            Explorez nos fonctionnalités principales et voyez comment Wonder Wo peut vous accompagner
+            Explorez nos fonctionnalités et voyez comment optimiser votre bien-être naturel
           </p>
           
           <div class="grid md:grid-cols-3 gap-6">
@@ -331,7 +331,7 @@
               <div class="w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <span class="text-2xl">📚</span>
               </div>
-              <h3 class="font-effloresce text-primary mb-2">Explorer la bibliothèque</h3>
+              <h3 class="font-effloresce text-primary mb-2">Découvrir la bibliothèque</h3>
               <p class="text-sm text-grey-black/70 mb-3">Parcourez nos remèdes naturels</p>
               <span class="accent-text text-sm">Découvrir →</span>
             </NuxtLink>
@@ -354,16 +354,16 @@
         <div class="max-w-4xl mx-auto px-4 text-center" data-aos="zoom-in" data-aos-duration="1000">
           <div class="bg-gradient-to-r from-primary to-secondary rounded-3xl p-12 text-blanc">
             <h2 class="text-3xl lg:text-4xl font-effloresce mb-6 text-blanc">
-              Prêt à commencer votre voyage bien-être ?
+              Prêt à optimiser votre bien-être naturel ?
             </h2>
             <p class="text-lg mb-8 text-blanc/90">
-              Rejoignez des milliers d'utilisateurs qui font confiance à Wonder Wo 
-              pour leur bien-être naturel quotidien.
+              Rejoignez des milliers d'utilisateurs qui utilisent Wonder Wo 
+              pour gérer leurs remèdes naturels au quotidien.
             </p>
             
             <div v-if="!loading && !isLoggedIn" class="flex flex-col sm:flex-row gap-4 justify-center">
               <NuxtLink to="/register" class="bg-blanc text-primary px-8 py-4 rounded-xl font-medium hover:bg-blanc/90 transition-colors">
-                Créer mon compte gratuit
+                Créer mon compte
               </NuxtLink>
               <button @click="showOnboardingAgain" class="border-2 border-blanc text-blanc px-8 py-4 rounded-xl font-medium hover:bg-blanc/10 transition-colors">
                 Voir la démonstration
@@ -596,10 +596,10 @@
                   <span class="text-2xl">🌿</span>
                 </div>
                 <div class="flex-1">
-                  <h3 class="font-effloresce text-lg text-grey-black mb-1">Explorer les remèdes</h3>
+                  <h3 class="font-effloresce text-lg text-grey-black mb-1">Découvrir la bibliothèque</h3>
                   <p class="text-sm text-grey-black/60">Bibliothèque naturelle</p>
                 </div>
-                <span class="font-hashtag text-primary text-lg">Explorer →</span>
+                <span class="font-hashtag text-primary text-lg">Découvrir →</span>
               </div>
             </NuxtLink>
 
@@ -797,8 +797,8 @@ const searchProduct = (product: string) => {
 useSeoMeta({
   title: 'Wonder Wo - Votre compagnon bien-être naturel',
   ogTitle: 'Wonder Wo - Votre compagnon bien-être naturel',
-  description: 'Découvrez des remèdes naturels personnalisés grâce à notre IA. Créez des profils familiaux et accédez à notre bibliothèque de solutions naturelles validées.',
-  ogDescription: 'Découvrez des remèdes naturels personnalisés grâce à notre IA. Créez des profils familiaux et accédez à notre bibliothèque de solutions naturelles validées.',
+  description: 'Découvrez des remèdes naturels personnalisés selon votre placard virtuel. Créez des profils familiaux et accédez à notre bibliothèque de solutions naturelles validées.',
+  ogDescription: 'Découvrez des remèdes naturels personnalisés selon votre placard virtuel. Créez des profils familiaux et accédez à notre bibliothèque de solutions naturelles validées.',
 })
 </script>
 

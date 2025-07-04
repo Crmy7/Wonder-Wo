@@ -9,7 +9,7 @@
       </div>
 
       <!-- Conteneur des produits de la bibliothèque -->
-      <div class="bg-beige/30 backdrop-blur-sm p-6 rounded-2xl border border-beige mb-8">
+      <div class="bg-beige/30 backdrop-blur-sm md:p-6 rounded-2xl border border-beige mb-8">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <div>
             <h3 class="text-xl font-semibold mb-1">Produits Naturels</h3>
@@ -21,7 +21,7 @@
                 v-model="searchQuery"
                 type="text"
                 placeholder="Rechercher un produit..."
-                class="px-4 py-2 pl-10 border border-beige rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                class="px-4 py-2 pl-10 border border-beige rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all  w-full md:w-auto"
               />
               <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
                 <span class="text-grey-black/60">🔍</span>
@@ -29,9 +29,9 @@
             </div>
             <button 
               @click="showFilters = !showFilters"
-              class="secondary-btn"
+              class="primary-btn"
             >
-              📋 Filtrer
+              Filtrer
             </button>
           </div>
         </div>

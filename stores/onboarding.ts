@@ -18,11 +18,11 @@ export const useOnboardingStore = defineStore('onboarding', () => {
     },
     {
       id: 'ai',
-      title: 'Intelligence Artificielle',
-      subtitle: 'Des recommandations sur mesure',
-      description: 'Notre IA analyse vos attentes, symptômes et profil pour vous proposer des solutions naturelles parfaitement adaptées.',
-      icon: '🤖',
-      accent: 'Smart & Précis'
+      title: 'Recherche Personnalisée',
+      subtitle: 'Des recommandations optimisées',
+      description: 'Notre système analyse vos produits disponibles, symptômes et profil pour vous proposer des solutions naturelles en priorité avec ce que vous possédez déjà.',
+      icon: '🏺',
+      accent: 'Smart & Optimisé'
     },
     {
       id: 'cupboard',

@@ -128,31 +128,52 @@
         <div class="mt-4 flex flex-wrap gap-2">
           <button
             @click="filtreActuel = 'tous'"
-            :class="filtreActuel === 'tous' ? 'bg-primary text-blanc' : 'bg-blanc text-grey-black hover:bg-primary/10'"
-            class="text-sm px-3 py-1 rounded-full border transition-colors"
+            :class="[
+              'text-sm transition-colors',
+              // Mobile: style uniforme avec les autres boutons du site
+              'px-4 py-2 rounded-xl',
+              // Desktop: style original
+              'md:px-3 md:py-1 md:rounded-full md:border',
+              // Couleurs conditionnelles
+              filtreActuel === 'tous' ? 'bg-primary text-blanc' : 'bg-blanc text-grey-black hover:bg-primary/10'
+            ]"
           >
             Tous ({{ totalRemedes }})
           </button>
           <button
             v-if="remedesAvecPlacardCount > 0"
             @click="filtreActuel = 'placard'"
-            :class="filtreActuel === 'placard' ? 'bg-primary text-blanc' : 'bg-blanc text-grey-black hover:bg-primary/10'"
-            class="text-sm px-3 py-1 rounded-full border transition-colors"
+            :class="[
+              'text-sm transition-colors',
+              // Mobile: style uniforme avec les autres boutons du site
+              'px-4 py-2 rounded-xl border border-primary/20',
+              // Desktop: style original
+              'md:px-3 md:py-1 md:rounded-full md:border',
+              // Couleurs conditionnelles
+              filtreActuel === 'placard' ? 'bg-primary text-blanc' : 'bg-blanc text-grey-black hover:bg-primary/10'
+            ]"
           >
             🏺 Avec vos produits ({{ remedesAvecPlacardCount }})
           </button>
           <button
             v-if="placardInfo.recettesSansPlacard > 0"
             @click="filtreActuel = 'sans_placard'"
-            :class="filtreActuel === 'sans_placard' ? 'bg-primary text-blanc' : 'bg-blanc text-grey-black hover:bg-primary/10'"
-            class="text-sm px-3 py-1 rounded-full border transition-colors"
+            :class="[
+              'text-sm transition-colors',
+              // Mobile: style uniforme avec les autres boutons du site
+              'px-4 py-2 rounded-xl border border-primary/20',
+              // Desktop: style original
+              'md:px-3 md:py-1 md:rounded-full md:border',
+              // Couleurs conditionnelles
+              filtreActuel === 'sans_placard' ? 'bg-primary text-blanc' : 'bg-blanc text-grey-black hover:bg-primary/10'
+            ]"
           >
             📦 Autres produits ({{ placardInfo.recettesSansPlacard }})
           </button>
         </div>
         
         <!-- Information sur le tri intelligent -->
-        <div class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <div class="hidden mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
           <div class="flex items-center gap-2 text-blue-700 text-sm">
             <span>💡</span>
             <span class="font-medium">Tri intelligent activé</span>

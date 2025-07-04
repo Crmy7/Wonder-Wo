@@ -5,7 +5,7 @@
       <div class="text-center mb-8">
         <h1 class="text-4xl font-bold mb-3">Wonder Wo</h1>
         <h2 class="text-xl font-medium text-grey-black mb-2">Profils Familiaux</h2>
-        <p class="accent-text text-3xl">Créez des profils personnalisés pour chaque membre</p>
+        <p class="accent-text text-lg">Créez des profils personnalisés pour chaque membre</p>
       </div>
 
       <!-- Switch de profil actif -->
@@ -78,7 +78,7 @@
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
             <h3 class="text-xl font-semibold mb-1">Mes Profils</h3>
-            <p class="text-3xl accent-text">{{ profilCount }} profil(s)</p>
+            <p class="text-xl accent-text">{{ profilCount }} profil(s)</p>
           </div>
           <div class="flex flex-col sm:flex-row gap-3">
             <button
