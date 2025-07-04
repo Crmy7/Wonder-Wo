@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-blanc">
-    <div class="max-w-6xl mx-auto px-4 py-6">
+    <div class="max-w-7xl mx-auto px-4 py-6">
       <!-- En-tête -->
       <div class="bg-primary/5 backdrop-blur-sm p-6 rounded-2xl border border-primary/20 mb-8">
         <div class="flex items-center justify-between">
@@ -208,7 +208,7 @@
             :disabled="loading"
             class="bg-primary/10 border border-primary/20 text-primary px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors disabled:opacity-50"
           >
-            🔄 Actualiser les statistiques
+            Actualiser les statistiques
           </button>
         </div>
       </div>

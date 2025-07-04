@@ -2,20 +2,18 @@
   <div class="min-h-screen bg-blanc">
     <div class="max-w-7xl mx-auto px-4 py-6">
       <!-- En-tête -->
-      <div class="flex items-center justify-between mb-8">
-        <div>
-          <div class="flex items-center gap-3 mb-2">
-            <NuxtLink 
-              to="/admin" 
-              class="text-grey-black/60 hover:text-primary transition-colors"
-            >
-              Administration
-            </NuxtLink>
-            <span class="text-grey-black/40">></span>
-            <span class="text-grey-black font-medium">Gestion des commentaires</span>
+      <div class="bg-primary/5 backdrop-blur-sm p-6 rounded-2xl border border-primary/20 mb-8">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-grey-black mb-2">Gestion des Commentaires</h1>
+            <p class="text-grey-black/60">Modérer et gérer les avis des utilisateurs</p>
           </div>
-          <h1 class="text-3xl font-bold text-grey-black">Gestion des commentaires</h1>
-          <p class="text-grey-black/60">Modérer et gérer les avis des utilisateurs</p>
+          <NuxtLink 
+            to="/admin" 
+            class="bg-blanc border border-beige text-grey-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-beige/50 transition-colors"
+          >
+            ← Retour admin
+          </NuxtLink>
         </div>
       </div>
 
@@ -101,7 +99,7 @@
             :disabled="loading"
             class="bg-primary/10 border border-primary/20 text-primary px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors disabled:opacity-50"
           >
-            🔄 Actualiser
+            Actualiser
           </button>
         </div>
       </div>

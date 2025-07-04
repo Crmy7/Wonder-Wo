@@ -36,12 +36,15 @@
             </div>
           </div>
 
+
+
           <!-- Statistiques -->
           <div class="flex items-center gap-6 text-sm text-grey-black/60">
             <span>Total: <strong class="text-grey-black">{{ stats.total }}</strong></span>
             <span>Page: <strong class="text-grey-black">{{ stats.currentPage }}/{{ stats.totalPages }}</strong></span>
           </div>
         </div>
+
       </div>
 
       <!-- Message d'erreur -->
@@ -426,6 +429,10 @@ const editForm = ref({
   efficacite: null as number | null
 })
 
+
+
+
+
 // Recherche avec debounce
 let searchTimeout: any = null
 const debouncedSearch = () => {
@@ -518,8 +525,8 @@ const saveRecipe = async () => {
 }
 
 // Charger les données au montage
-onMounted(() => {
-  loadRecipes()
+onMounted(async () => {
+  await loadRecipes()
 })
 
 // Meta données

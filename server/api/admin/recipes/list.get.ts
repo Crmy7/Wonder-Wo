@@ -56,7 +56,7 @@ export default defineEventHandler(async (event) => {
         entity_type: 'recette',
         entity_id: recipeIds,
         status: 'approved',
-        rating: { [Comments.sequelize.Op.ne]: null }
+        rating: { [Op.ne]: null }
       },
       attributes: [
         'entity_id',
@@ -102,9 +102,26 @@ export default defineEventHandler(async (event) => {
     }
     
   } catch (dbError) {
-    console.error('Erreur base de données:', dbError)
+    console.error('❌ [ADMIN RECIPES] Erreur base de données détaillée:', {
+      message: dbError.message,
+      code: dbError.code,
+      sql: dbError.sql,
+      stack: process.env.NODE_ENV === 'development' ? dbError.stack : 'Stack masqué en production'
+    })
     
-    // Fallback avec données par défaut
+    // En développement, montrer l'erreur complète
+    if (process.env.NODE_ENV === 'development') {
+      throw createError({
+        statusCode: 500,
+        statusMessage: `Erreur DB: ${dbError.message}`,
+        data: {
+          error_code: dbError.code,
+          sql_error: dbError.sql || 'N/A'
+        }
+      })
+    }
+    
+    // En production, fallback silencieux avec log
     return {
       recipes: [],
       pagination: {
