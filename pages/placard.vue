@@ -172,7 +172,7 @@
           <div 
             v-for="item in placardItems" 
             :key="item.id"
-            class="bg-blanc p-6 rounded-2xl border border-beige hover:border-primary/20 transition-all group"
+            class="bg-blanc p-6 rounded-2xl border border-primary/20 md:hover:border-primary/20 transition-all group"
           >
             <div class="flex items-center gap-3 mb-4">
               <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">

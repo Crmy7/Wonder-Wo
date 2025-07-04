@@ -245,10 +245,10 @@
               
               <div class="flex flex-wrap gap-2 text-sm">
                 <span v-if="profil.grossesse" class="bg-beige text-grey-black px-3 py-1 rounded-full flex items-center gap-1">
-                  🤱 <span class="font-hashtag text-xl">Enceinte</span>
+                  🤱 <span class="font-hashtag text-md">Enceinte</span>
                 </span>
                 <span v-if="profil.enfants" class="bg-beige text-grey-black px-3 py-1 rounded-full flex items-center gap-1">
-                  👨‍👩‍👧‍👦 <span class="font-hashtag text-xl">Parent</span>
+                  👨‍👩‍👧‍👦 <span class="font-hashtag text-md">Parent</span>
                 </span>
                 <span v-if="!profil.grossesse && !profil.enfants" class="accent-text-primary text-xl">
                   Profil standard
@@ -280,7 +280,7 @@
 
       <!-- Gestion des maux courants -->
       <div class="bg-blanc p-6 rounded-2xl border border-beige mt-8">
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col md:flex-row justify-between items-between md:items-center mb-6 gap-4 md:gap-0">
           <div>
             <h3 class="text-lg font-semibold flex items-center gap-2">
               <span>🎯</span>

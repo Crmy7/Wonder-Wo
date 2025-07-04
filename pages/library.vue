@@ -80,7 +80,7 @@
           <div 
             v-for="produit in filteredProduits" 
             :key="produit.id"
-            class="bg-blanc p-6 rounded-2xl border border-beige hover:border-primary/20 transition-all group cursor-pointer"
+            class="bg-blanc p-6 rounded-2xl border border-primary/20 md:hover:border-primary/20 transition-all group cursor-pointer"
             @click="navigateTo(`/product/${produit.id}`)"
           >
             <div class="flex items-center gap-3 mb-4">
