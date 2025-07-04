@@ -46,20 +46,20 @@
         <!-- En-tête du remède -->
         <div class="bg-primary/5 backdrop-blur-sm p-4 sm:p-6 lg:p-8 rounded-2xl border border-primary/20">
           <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
-            <!-- Image générique pour HE -->
+            <!-- Image du produit -->
             <div class="w-full max-w-xs mx-auto lg:mx-0 lg:w-1/3">
               <div class="md:aspect-square h-[150px] md:h-auto md:max-h-none bg-blanc rounded-2xl border border-beige overflow-hidden flex items-center justify-center">
-                <span class="text-6xl">🪔</span>
+                <span class="text-6xl">{{ getRecipeImage() }}</span>
               </div>
             </div>
             <!-- Informations principales -->
             <div class="lg:w-2/3 text-center lg:text-left">
               <div class="mb-4 sm:mb-6">
                 <h2 class="text-2xl sm:text-3xl font-bold text-grey-black mb-2">
-                  Diffusion relaxante
+                  {{ getRecipeTitle() }}
                 </h2>
                 <p class="text-base sm:text-lg text-grey-black/70 italic mb-3 sm:mb-4">
-                  Mélange d'huiles essentielles
+                  {{ getTypeRemede(remede.Type_Remede) }}
                 </p>
                 
                 <!-- Note moyenne -->
@@ -82,25 +82,25 @@
                 <!-- Tags informatifs -->
                 <div class="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6 justify-center lg:justify-start">
                   <span class="bg-primary/10 text-primary text-xs sm:text-sm font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-full">
-                    Aromathérapie
+                    {{ getTypeRemede(remede.Type_Remede) }}
                   </span>
                   <span class="bg-beige text-grey-black text-xs sm:text-sm font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-full">
                     {{ getTypeApplication(remede.Type_Application) }}
                   </span>
-                  <span class="bg-primary/10 text-primary text-xs sm:text-sm font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-full">
+                  <span v-if="remede.Efficacite" class="bg-primary/10 text-primary text-xs sm:text-sm font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-full">
                     Efficacité: {{ remede.Efficacite }}/5
                   </span>
                 </div>
               </div>
               <!-- Propriétés principales -->
               <div class="grid gap-3 sm:gap-4">
-                <div class="bg-blanc/70 p-3 sm:p-4 rounded-xl">
+                <div v-if="produits && produits.length > 0" class="bg-blanc/70 p-3 sm:p-4 rounded-xl">
                   <h4 class="font-semibold text-grey-black mb-1 sm:mb-2 text-sm sm:text-base">Propriété principale</h4>
-                  <p class="text-xs sm:text-sm text-grey-black/70">Relaxation, détente</p>
+                  <p class="text-xs sm:text-sm text-grey-black/70">{{ produits[0]?.Propriete_Principale || 'Non spécifiée' }}</p>
                 </div>
-                <div class="bg-blanc/70 p-3 sm:p-4 rounded-xl">
+                <div v-if="produits && produits.length > 0" class="bg-blanc/70 p-3 sm:p-4 rounded-xl">
                   <h4 class="font-semibold text-grey-black mb-1 sm:mb-2 text-sm sm:text-base">Propriétés secondaires</h4>
-                  <p class="text-xs sm:text-sm text-grey-black/70">Favorise le sommeil, réduit le stress</p>
+                  <p class="text-xs sm:text-sm text-grey-black/70">{{ produits[0]?.Propriete_Secondaire || 'Non spécifiées' }}</p>
                 </div>
               </div>
             </div>
@@ -224,7 +224,7 @@
               <h3 class="text-base sm:text-lg font-semibold">Conseils d'utilisation</h3>
             </div>
             <p class="text-grey-black/80 text-xs sm:text-sm leading-relaxed">
-              Diffuser le mélange 30 minutes avant le coucher dans une pièce aérée. Ne pas dépasser la dose recommandée.
+              {{ produits && produits.length > 0 ? produits[0]?.Utilisation : 'Suivre les instructions de la recette ci-dessus.' }}
             </p>
           </div>
         </div>
@@ -241,7 +241,7 @@
           <div class="space-y-3 sm:space-y-4">
             <div class="bg-blanc/70 p-3 sm:p-4 rounded-xl">
               <p class="text-xs sm:text-sm text-grey-black/80 leading-relaxed">
-                Ne pas utiliser chez les enfants de moins de 3 ans. Aérer la pièce après diffusion. Éviter le contact avec les yeux.
+                {{ produits && produits.length > 0 ? produits[0]?.Precautions : 'Respecter les dosages recommandés et consulter un professionnel de santé en cas de doute.' }}
               </p>
             </div>
             <!-- Informations sur l'âge et grossesse -->
@@ -275,7 +275,7 @@
           <div class="grid gap-3 sm:gap-4">
             <div>
               <p class="text-xs sm:text-sm font-medium text-grey-black mb-1">Source principale</p>
-              <p class="text-xs text-grey-black/70">Aromathérapie relaxante</p>
+              <p class="text-xs text-grey-black/70">{{ produits && produits.length > 0 ? produits[0]?.Source : 'Non spécifiée' }}</p>
             </div>
             <div>
               <p class="text-xs sm:text-sm font-medium text-grey-black mb-1">Documentation</p>
@@ -387,18 +387,28 @@ function goBack() {
 // Fonction utilitaire pour afficher la tranche d'âge
 function getTrancheAge(tranche: string | number | undefined): string {
   if (!tranche) return 'Non spécifiée'
-  // Ajoutez ici la logique de conversion selon vos besoins
-  // Exemple simple :
-  switch (tranche) {
-    case 'adulte':
+  
+  if (typeof tranche === 'string') {
+    switch (tranche.toLowerCase()) {
+      case 'adulte':
+        return 'Adulte (18+ ans)'
+      case 'enfant':
+        return 'Enfant (3-17 ans)'
+      case 'bebe':
+        return 'Bébé (0-3 ans)'
+      default:
+        return String(tranche)
+    }
+  }
+  
+  // Gestion des valeurs numériques
+  switch (Number(tranche)) {
     case 1:
-      return 'Adulte'
-    case 'enfant':
+      return 'Adulte (18+ ans)'
     case 2:
-      return 'Enfant'
-    case 'bebe':
+      return 'Enfant (3-17 ans)'
     case 3:
-      return 'Bébé'
+      return 'Bébé (0-3 ans)'
     default:
       return String(tranche)
   }
@@ -407,14 +417,26 @@ function getTrancheAge(tranche: string | number | undefined): string {
 // Fonction utilitaire pour afficher le type d'application
 function getTypeApplication(type: string | number | undefined): string {
   if (!type) return 'Non spécifié'
-  switch (type) {
-    case 'diffusion':
+  
+  if (typeof type === 'string') {
+    switch (type.toLowerCase()) {
+      case 'diffusion':
+        return 'Diffusion atmosphérique'
+      case 'massage':
+        return 'Application cutanée'
+      case 'oral':
+        return 'Voie orale'
+      default:
+        return String(type)
+    }
+  }
+  
+  // Gestion des valeurs numériques
+  switch (Number(type)) {
     case 1:
-      return 'Diffusion'
-    case 'massage':
+      return 'Diffusion atmosphérique'
     case 2:
-      return 'Massage'
-    case 'oral':
+      return 'Application cutanée'
     case 3:
       return 'Voie orale'
     default:
@@ -425,16 +447,28 @@ function getTypeApplication(type: string | number | undefined): string {
 // Fonction utilitaire pour afficher le type de remède
 function getTypeRemede(type: string | number | undefined): string {
   if (!type) return 'Non spécifié'
-  switch (type) {
-    case 'melange':
+  
+  if (typeof type === 'string') {
+    switch (type.toLowerCase()) {
+      case 'melange':
+        return 'Mélange d\'huiles essentielles'
+      case 'huile':
+        return 'Huile essentielle pure'
+      case 'infusion':
+        return 'Infusion de plantes'
+      default:
+        return String(type)
+    }
+  }
+  
+  // Gestion des valeurs numériques
+  switch (Number(type)) {
     case 1:
-      return 'Mélange'
-    case 'huile':
+      return 'Mélange d\'huiles essentielles'
     case 2:
-      return 'Huile essentielle'
-    case 'infusion':
+      return 'Huile essentielle pure'
     case 3:
-      return 'Infusion'
+      return 'Infusion de plantes'
     default:
       return String(type)
   }
@@ -444,6 +478,55 @@ function getTypeRemede(type: string | number | undefined): string {
 const props = defineProps<{
   remedeId: number
 }>()
+
+// Computed property for the recipe title
+const getRecipeTitle = () => {
+  if (!remede.value) return 'Remède'
+  
+  const typeRemede = getTypeRemede(remede.value.Type_Remede)
+  const typeApplication = getTypeApplication(remede.value.Type_Application)
+  
+  return `${typeRemede} - ${typeApplication}`
+}
+
+// Computed property for the recipe image
+const getRecipeImage = () => {
+  // Utiliser l'image du premier produit si disponible
+  if (produits.value && produits.value.length > 0 && produits.value[0]?.Image_url) {
+    return produits.value[0].Image_url
+  }
+  
+  // Sinon, utiliser une icône contextuelle basée sur le type d'application/remède
+  if (!remede.value) return '🌿'
+  
+  // Icônes basées sur le type d'application
+  switch (remede.value.Type_Application) {
+    case 1: // diffusion
+    case 'diffusion':
+      return '🪔'
+    case 2: // massage
+    case 'massage':
+      return '💆'
+    case 3: // oral
+    case 'oral':
+      return '💊'
+    default:
+      // Icônes basées sur le type de remède
+      switch (remede.value.Type_Remede) {
+        case 1: // melange
+        case 'melange':
+          return '🌿'
+        case 2: // huile
+        case 'huile':
+          return '🪔'
+        case 3: // infusion
+        case 'infusion':
+          return '☕'
+        default:
+          return '🌿'
+      }
+  }
+}
 
 </script>
 

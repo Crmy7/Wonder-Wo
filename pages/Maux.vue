@@ -124,54 +124,6 @@
           </div>
         </div>
 
-        <!-- Filtres rapides -->
-        <div class="mt-4 flex flex-wrap gap-2">
-          <button
-            @click="filtreActuel = 'tous'"
-            :class="[
-              'text-sm transition-colors',
-              // Mobile: style uniforme avec les autres boutons du site
-              'px-4 py-2 rounded-xl',
-              // Desktop: style original
-              'md:px-3 md:py-1 md:rounded-full md:border',
-              // Couleurs conditionnelles
-              filtreActuel === 'tous' ? 'bg-primary text-blanc' : 'bg-blanc text-grey-black hover:bg-primary/10'
-            ]"
-          >
-            Tous ({{ totalRemedes }})
-          </button>
-          <button
-            v-if="remedesAvecPlacardCount > 0"
-            @click="filtreActuel = 'placard'"
-            :class="[
-              'text-sm transition-colors',
-              // Mobile: style uniforme avec les autres boutons du site
-              'px-4 py-2 rounded-xl border border-primary/20',
-              // Desktop: style original
-              'md:px-3 md:py-1 md:rounded-full md:border',
-              // Couleurs conditionnelles
-              filtreActuel === 'placard' ? 'bg-primary text-blanc' : 'bg-blanc text-grey-black hover:bg-primary/10'
-            ]"
-          >
-            🏺 Avec vos produits ({{ remedesAvecPlacardCount }})
-          </button>
-          <button
-            v-if="placardInfo.recettesSansPlacard > 0"
-            @click="filtreActuel = 'sans_placard'"
-            :class="[
-              'text-sm transition-colors',
-              // Mobile: style uniforme avec les autres boutons du site
-              'px-4 py-2 rounded-xl border border-primary/20',
-              // Desktop: style original
-              'md:px-3 md:py-1 md:rounded-full md:border',
-              // Couleurs conditionnelles
-              filtreActuel === 'sans_placard' ? 'bg-primary text-blanc' : 'bg-blanc text-grey-black hover:bg-primary/10'
-            ]"
-          >
-            📦 Autres produits ({{ placardInfo.recettesSansPlacard }})
-          </button>
-        </div>
-        
         <!-- Information sur le tri intelligent -->
         <div class="hidden mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
           <div class="flex items-center gap-2 text-blue-700 text-sm">
@@ -188,50 +140,95 @@
       </div>
 
       <!-- Incitation placard (si aucune recette avec le placard) -->
-      <div v-if="searched && incitationPlacard" class="bg-gradient-to-r from-primary/5 to-secondary/5 p-6 rounded-2xl border border-primary/20 mb-6">
-        <div class="flex flex-col sm:flex-row sm:items-start gap-4">
-          <div class="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
-            <span class="text-2xl">🏺</span>
+      <div v-if="searched && incitationPlacard" class="bg-primary/5 p-4 rounded-xl border border-primary/10 mb-6">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <span class="text-lg">🏺</span>
           </div>
           
           <div class="flex-1">
-            <h3 class="text-lg font-semibold mb-2 flex items-center gap-2">
-              <span>💡 Astuce pour de meilleurs résultats</span>
+            <h3 class="text-base font-semibold mb-2 flex items-center gap-2">
+              <span>💡 Astuce pour des recettes personnalisées</span>
             </h3>
-            <p class="text-grey-black/70 mb-4">{{ incitationPlacard.message }}</p>
+            <p class="text-grey-black/70 mb-3 text-sm">{{ incitationPlacard.message }}</p>
             
-            <div class="flex flex-wrap gap-3">
+            <div class="flex flex-wrap gap-2">
               <button
                 v-for="produit in incitationPlacard.produitsRecommandes"
                 :key="produit.id"
                 @click="ajouterProduitRecommande(produit.id)"
                 :disabled="loadingPlacard"
-                class="bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-50"
+                class="bg-primary/10 hover:bg-primary/20 border border-primary/20 text-primary px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-2 disabled:opacity-50"
               >
-                <span>+ Ajouter {{ produit.nom }}</span>
-                <span class="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
-                  {{ produit.count }} recette{{ produit.count > 1 ? 's' : '' }}
+                <span>+ {{ produit.nom }}</span>
+                <span class="text-xs bg-primary/20 text-primary px-1.5 py-0.5 rounded-full">
+                  {{ produit.count }}
                 </span>
               </button>
             </div>
             
-            <p class="text-xs text-grey-black/60 mt-3">
-              En ajoutant ces produits à votre placard, vous pourrez accéder à plus de recettes personnalisées.
+            <p class="text-xs text-grey-black/60 mt-2">
+              En ajoutant ces produits, vous accéderez à plus de recettes personnalisées.
             </p>
           </div>
         </div>
       </div>
 
       <!-- Résultats de recherche -->
-      <div v-if="searched && hasResults" class="space-y-6">
-        <!-- Liste des remèdes filtrés -->
-        <div class="grid gap-6">
-          <RemedyCard 
-            v-for="recette in remedesFiltres" 
-            :key="recette.id" 
-            :remedy="recette"
-            @products-added="handleProductsAdded"
-          />
+      <div v-if="searched && hasResults" class="space-y-8">
+        <!-- Section : Recettes avec vos produits du placard -->
+        <div v-if="resultatsAvecPlacard.length > 0" class="space-y-4">
+          <div class="bg-primary/5 p-4 rounded-xl border border-primary/20">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="text-xl">🏺</span>
+              <h3 class="text-lg font-semibold text-primary">Recettes avec vos produits du placard</h3>
+            </div>
+            <p class="text-sm text-grey-black/70">
+              {{ resultatsAvecPlacard.length }} recette{{ resultatsAvecPlacard.length > 1 ? 's' : '' }} 
+              utilisant les produits déjà dans votre placard
+            </p>
+          </div>
+          
+          <div class="grid gap-6">
+            <RemedyCard 
+              v-for="recette in resultatsAvecPlacard" 
+              :key="recette.id" 
+              :remedy="recette"
+              @products-added="handleProductsAdded"
+            />
+          </div>
+        </div>
+
+        <!-- Section : Autres résultats -->
+        <div v-if="resultatsAucunPlacard.length > 0" class="space-y-4">
+          <div class="bg-beige/30 p-4 rounded-xl border border-beige">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="text-xl">📦</span>
+              <h3 class="text-lg font-semibold text-grey-black">Autres résultats</h3>
+            </div>
+            <p class="text-sm text-grey-black/70">
+              {{ resultatsAucunPlacard.length }} recette{{ resultatsAucunPlacard.length > 1 ? 's' : '' }} 
+              nécessitant d'autres produits
+            </p>
+          </div>
+          
+          <div class="grid gap-6">
+            <RemedyCard 
+              v-for="recette in resultatsAucunPlacard" 
+              :key="recette.id" 
+              :remedy="recette"
+              @products-added="handleProductsAdded"
+            />
+          </div>
+        </div>
+
+        <!-- Message si tous les résultats utilisent le placard -->
+        <div v-if="resultatsAvecPlacard.length > 0 && resultatsAucunPlacard.length === 0" class="bg-primary/5 p-6 rounded-xl border border-primary/20 text-center">
+          <span class="text-3xl">🎉</span>
+          <h3 class="text-lg font-semibold text-primary mt-2 mb-1">Parfait !</h3>
+          <p class="text-sm text-grey-black/70">
+            Tous les remèdes trouvés utilisent les produits de votre placard.
+          </p>
         </div>
       </div>
 
@@ -369,7 +366,6 @@ const {
 
 // État local
 const searchTerm = ref('')
-const filtreActuel = ref('tous')
 const loadingPlacard = ref(false)
 const selectedSuggestionIndex = ref(-1)
 
@@ -399,18 +395,6 @@ const handleProductsAdded = async () => {
     await rechercherAvecProfilActuel(lastSearchTerm.value)
   }
 }
-
-// Résultats filtrés selon le filtre actuel
-const remedesFiltres = computed(() => {
-  switch (filtreActuel.value) {
-    case 'placard':
-      return resultatsAvecPlacard.value as any[]
-    case 'sans_placard':
-      return resultatsAucunPlacard.value as any[]
-    default:
-      return resultats.value as any[] // Les résultats sont déjà triés par l'API
-  }
-})
 
 // Gestion des suggestions
 const handleInput = () => {
@@ -488,7 +472,6 @@ const handleSearch = async () => {
   try {
     console.log('📡 [PAGE] Appel rechercherAvecProfilActuel')
     await rechercherAvecProfilActuel(searchTerm.value)
-    filtreActuel.value = 'tous' // Reset du filtre
     console.log('✅ [PAGE] Recherche terminée avec succès')
   } catch (err: any) {
     console.error('❌ [PAGE] Erreur recherche:', err)
@@ -509,7 +492,6 @@ const searchSuggestion = (suggestion: string) => {
 
 const resetSearch = () => {
   searchTerm.value = ''
-  filtreActuel.value = 'tous'
   resetRecherche()
   // Nettoyer l'URL
   updateSearchUrl('')

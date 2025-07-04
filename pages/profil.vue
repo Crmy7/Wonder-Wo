@@ -427,6 +427,13 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal d'onboarding placard -->
+  <PlacardOnboardingModal 
+    :is-visible="showPlacardModal"
+    @close="closePlacardModal"
+    @goto-placard="goToPlacardFromModal"
+  />
 </template>
 
 <script setup lang="ts">
@@ -454,6 +461,13 @@ const {
   initProfils,
   resetStore 
 } = useProfils()
+
+// Onboarding placard
+const { showModal: showPlacardModal, closeModal: closePlacardModal, goToPlacard, checkAndShowModal } = usePlacardOnboarding()
+
+const goToPlacardFromModal = async () => {
+  await goToPlacard()
+}
 
 // Composable pour la gestion du formulaire de création
 const useCreateProfilForm = () => {
@@ -496,6 +510,8 @@ const useCreateProfilForm = () => {
       setTimeout(() => {
         showCreateForm.value = false
       }, 2000)
+      
+      // Si c'est le premier profil, l'onboarding sera déclenché automatiquement par l'événement
       
     } catch (error: any) {
       console.error('Erreur création profil:', error)
@@ -767,6 +783,22 @@ onMounted(async () => {
   // Charger les profils et les maux courants
   await initProfils()
   await loadUserMauxCourants()
+  
+  // Écouter l'événement de création du premier profil
+  if (typeof window !== 'undefined') {
+    const handleFirstProfileCreated = (event: Event) => {
+      console.log('🎉 Premier profil créé, déclenchement onboarding placard')
+      const customEvent = event as CustomEvent
+      checkAndShowModal(true)
+    }
+    
+    window.addEventListener('firstProfileCreated', handleFirstProfileCreated)
+    
+    // Nettoyer l'écouteur d'événement lors du démontage
+    onUnmounted(() => {
+      window.removeEventListener('firstProfileCreated', handleFirstProfileCreated)
+    })
+  }
 })
 </script>
 

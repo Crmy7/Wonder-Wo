@@ -186,15 +186,6 @@
         <span>📋</span>
         <span>Voir détails</span>
       </NuxtLink>
-      
-      <!-- Badge de priorité selon placard -->
-      <div 
-        v-if="remedy.produitsPlacardDisponibles > 0"
-        class="bg-primary/10 text-primary px-3 py-2 rounded-xl text-xs font-medium border border-primary/20 flex items-center gap-2"
-      >
-        <span>⭐</span>
-        <span>Priorité placard</span>
-      </div>
     </div>
   </NuxtLink>
 </template>

@@ -115,6 +115,9 @@ export const useProfilStore = defineStore('profil', {
       try {
         console.log('➕ Création d\'un nouveau profil:', profilData.nom)
         
+        // Vérifier si c'est le premier profil
+        const wasFirstProfile = this.profils.length === 0
+        
         const data = await $fetch('/api/profil/create', {
           method: 'POST',
           body: profilData
@@ -130,7 +133,19 @@ export const useProfilStore = defineStore('profil', {
         }
         
         console.log('✅ Profil créé et sélectionné')
-        return { success: true, message: data.message }
+        
+        // Déclencher l'onboarding placard si c'est le premier profil
+        if (wasFirstProfile && typeof window !== 'undefined') {
+          // Utiliser nextTick pour s'assurer que le composant est monté
+          await nextTick()
+          
+          // Émettre un événement personnalisé pour déclencher l'onboarding
+          window.dispatchEvent(new CustomEvent('firstProfileCreated', {
+            detail: { profileName: profilData.nom }
+          }))
+        }
+        
+        return { success: true, message: data.message, isFirstProfile: wasFirstProfile }
         
       } catch (error: any) {
         console.error('❌ Erreur création profil:', error)

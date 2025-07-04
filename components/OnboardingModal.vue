@@ -149,7 +149,7 @@
                       </div>
                       
                       <!-- Liste des maux -->
-                      <div v-else class="grid grid-cols-1 gap-2 mb-3 max-h-40 overflow-y-auto">
+                      <div v-else class="grid grid-cols-1 gap-2 mb-3 max-h-60 overflow-y-auto">
                         <button
                           v-for="mal in availableMaux"
                           :key="mal.id"
